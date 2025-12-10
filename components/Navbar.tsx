@@ -13,7 +13,7 @@ export default function Navbar() {
     const [hasUserData, setHasUserData] = useState(false);
 
     useEffect(() => {
-        async function fetchPosts() {
+        async function fetchUserData() {
             if (!userId) {
                 setHasUserData(false);
                 return;
@@ -34,8 +34,8 @@ export default function Navbar() {
             }
         }
 
-        fetchPosts();
-    }, [userId]);
+        fetchUserData();
+    }, [userId, pathname]);
     
     return (
         <nav className="sticky top-0 left-0 w-20 h-screen border-r border-black flex flex-col items-center pt-4 bg-cream">
