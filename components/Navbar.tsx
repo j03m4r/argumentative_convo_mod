@@ -3,10 +3,39 @@
 import { useUser } from "@/providers/UserProvider";
 import Image from "next/image"
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getUserData } from "@/lib/firebase/firestore";
+import { UserData } from "@/types/user";
 
 export default function Navbar() {
     const pathname = usePathname();
-    const { user } = useUser();
+    const { userId } = useUser();
+    const [hasUserData, setHasUserData] = useState(false);
+
+    useEffect(() => {
+        async function fetchPosts() {
+            if (!userId) {
+                setHasUserData(false);
+                return;
+            }
+
+            try {
+                const userData = await getUserData(userId) as UserData | null;
+
+                if (!userData || !userData.initialRatings) {
+                    setHasUserData(false);
+                    return;
+                }
+
+                setHasUserData(true);
+            } catch (error) {
+                console.error("Error fetching posts:", error);
+                setHasUserData(false);
+            }
+        }
+
+        fetchPosts();
+    }, [userId]);
     
     return (
         <nav className="sticky top-0 left-0 w-20 h-screen border-r border-black flex flex-col items-center pt-4 bg-cream">
@@ -17,7 +46,7 @@ export default function Navbar() {
                 alt="Y Logo"
                 className="w-full h-auto"
             />
-            {user&&(
+            {hasUserData&&(
                 <div className="flex flex-col h-full mt-4 border-t border-black w-full items-center">
                     <NavItem active={pathname === "/"}>
                         <svg xmlns="http://www.w3.org/2000/svg" width={24} viewBox="0 0 640 640" className="fill-current">

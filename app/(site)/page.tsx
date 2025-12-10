@@ -51,7 +51,6 @@ export default function HomePage() {
                 const userData = await getUserData(userId) as UserData | null;
 
                 if (!userData || !userData.initialRatings) {
-                    console.error("User data not found or incomplete");
                     setIsLoading(false);
                     return;
                 }
@@ -62,10 +61,10 @@ export default function HomePage() {
                 setPalestinePost(palestine_posts[userData.auxPostIdx1]);
                 setVaccinePost(vaccine_posts[userData.auxPostIdx2]);
 
-                // setTimeout(function() {
-                //     setIsLoading(false);
-                // }, 5000);
-                setIsLoading(false);
+                setTimeout(function() {
+                    setIsLoading(false);
+                }, 5000);
+                // setIsLoading(false);
             } catch (error) {
                 console.error("Error fetching posts:", error);
                 setIsLoading(false);
