@@ -168,7 +168,7 @@ const ChatInterface: FC<ChatInterfaceProps> = ({ userPfp, initialSystemPrompt, p
                         Hold on...
                     </h1>
                     <h2 className="text-lg">
-                        Before you post your response to this discussion forum, we need you to talk with our AI moderator.
+                        Before you post your response to this discussion forum, we would like to have a conversation with you.
                     </h2>
                 </div>
             </div>

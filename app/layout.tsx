@@ -21,12 +21,12 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={`${inter.className} antialiased flex justify-center min-h-screen`}>
+            <body className={`${inter.className} antialiased flex justify-center w-full min-h-screen`}>
                 <UserProvider>
                     <SetupGate>
-                        <div className="w-full max-w-7xl flex relative">
+                        <div className="w-full flex justify-center relative">
                             <Navbar />
-                            <div className="flex-1">
+                            <div className="flex-1 max-w-7xl">
                                 {children}
                             </div>
                         </div>
