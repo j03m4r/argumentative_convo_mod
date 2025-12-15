@@ -257,10 +257,6 @@ const ChatInterface: FC<ChatInterfaceProps> = ({ userPfp, initialSystemPrompt, p
                         </div>
 
                         <div className='flex-1 flex flex-col'>
-                            <p className='text-sm text-gray-500 mb-2'>
-                                Chatting with <span className='text-blood-orange'>AI Moderator</span>
-                            </p>
-
                             <textarea
                                 ref={textareaRef}
                                 value={input}
