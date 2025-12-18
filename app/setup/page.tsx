@@ -72,7 +72,7 @@ export default function SetupPage() {
                 <button 
                     onClick={handlePrevClick} 
                     disabled={phase === PHASE.PROFILE_PHASE} 
-                    className="bg-cream disabled:cursor-not-allowed disabled:hover:border-black disabled:hover:bg-cream disabled:hover:text-black disabled:opacity-25 text-lg cursor-pointer w-full py-16 border-t border-r border-black hover:bg-blood-orange hover:border-blood-orange hover:text-cream transition-all ease-in-out duration-200"
+                    className="bg-cream disabled:cursor-not-allowed disabled:hover:border-black disabled:hover:bg-cream disabled:hover:text-black disabled:opacity-25 text-lg cursor-pointer w-full py-16 border-t border-black hover:bg-blood-orange hover:border-blood-orange hover:text-cream transition-all ease-in-out duration-200 border-x"
                 >
                     Prev
                 </button>

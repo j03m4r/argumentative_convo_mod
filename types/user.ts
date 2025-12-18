@@ -9,6 +9,8 @@ export type UserData = {
   initialResponse: string;
   revisedResponse: string;
   conversation: string[];
+  finishedModeration: boolean;
+  hasUpvoted: boolean|null;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 };

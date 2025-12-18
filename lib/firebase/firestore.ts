@@ -1,13 +1,3 @@
-// Firestore structure:
-// users/{userId}
-//   - hasCompletedInitialRatings: boolean
-//   - initialRatings: number[]
-//   - initialResponse: string
-//   - revisedResponse: string
-//   - conversation: string[]
-//   - createdAt: timestamp
-//   - updatedAt: timestamp
-
 // lib/firebase/firestore.ts
 'use client';
 
@@ -36,6 +26,7 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
         }
     }
 
+    // TODO :: fix this issue with polarized/disagree post
     if (polarizedPosts.length > 0) {
         disagreePostIdx = polarizedPosts[Math.floor(Math.random() * polarizedPosts.length)];
     }
@@ -49,6 +40,8 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
         initialResponse: '',
         revisedResponse: '',
         conversation: [],
+        finishedModeration: false,
+        hasUpvoted: null,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
     });
@@ -72,11 +65,46 @@ export async function updateRevisedResponse(userId: string, response: string) {
     });
 }
 
-export async function addConversationMessages(userId: string, messages: string[]) {
+export async function updateUpVoteStatus(userId: string, hasUpvoted: boolean|null) {
     const docRef = doc(db, 'users', userId);
 
     await updateDoc(docRef, {
-        conversation: messages,
+        hasUpvoted: hasUpvoted,
+        updatedAt: Timestamp.now(),
+    });
+}
+
+export async function updateFinishedModerationStatus(userId: string, finishedModeration: boolean) {
+    const docRef = doc(db, 'users', userId);
+
+    await updateDoc(docRef, {
+        finishedModeration: finishedModeration,
+        updatedAt: Timestamp.now(),
+    });
+}
+
+export async function addConversationMessage(userId: string, message: { role: string; content: string; timestamp: Date }) {
+    const docRef = doc(db, 'users', userId);
+    await updateDoc(docRef, {
+        conversation: arrayUnion({
+            role: message.role,
+            content: message.content,
+            timestamp: Timestamp.fromDate(message.timestamp)
+        }),
+        updatedAt: Timestamp.now(),
+    });
+}
+
+export async function addConversationMessages(userId: string, messages: { role: string; content: string; timestamp: Date }[]) {
+    const docRef = doc(db, 'users', userId);
+    const formattedMessages = messages.map(msg => ({
+        role: msg.role,
+        content: msg.content,
+        timestamp: Timestamp.fromDate(msg.timestamp)
+    }));
+    
+    await updateDoc(docRef, {
+        conversation: formattedMessages,
         updatedAt: Timestamp.now(),
     });
 }

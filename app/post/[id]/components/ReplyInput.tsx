@@ -3,20 +3,23 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import type { FC } from 'react';
 import { Post as P } from "@/lib/experiment_materials/posts";
+import { useDebounce } from '@/lib/hooks/useDebounce';
 
 interface ReplyInputProps {
     post: P;
     userPfp: string;
     handleReply: (reply: string) => void;
-    initialReply?: string;
+    initialReply: string;
+    updateReply: (reply: string) => void;
 }
 
-const ReplyInput: FC<ReplyInputProps> = ({ post, userPfp, handleReply, initialReply }) => {
-    const [replyText, setReplyText] = useState(initialReply||"");
-    const [isFocused, setIsFocused] = useState(initialReply&&initialReply!="");
+const ReplyInput: FC<ReplyInputProps> = ({ post, userPfp, handleReply, initialReply, updateReply }) => {
+    const [replyText, setReplyText] = useState(initialReply || "");
+    const [isFocused, setIsFocused] = useState(initialReply && initialReply.trim().length > 0);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    
+    const debouncedReplyText = useDebounce(replyText, 500);
 
-    // Auto-resize textarea
     useEffect(() => {
         if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';
@@ -24,10 +27,20 @@ const ReplyInput: FC<ReplyInputProps> = ({ post, userPfp, handleReply, initialRe
         }
     }, [replyText]);
 
+    useEffect(() => {
+        setReplyText(initialReply);
+    }, [initialReply])
+
+    useEffect(() => {
+        if (debouncedReplyText !== initialReply || debouncedReplyText === "") {
+            updateReply(debouncedReplyText);
+        }
+    }, [debouncedReplyText]);
+
     const _handleReply = () => {
         if (replyText.trim()) {
             handleReply(replyText);
-            setReplyText('');
+            // setReplyText('');
         }
     };
 
@@ -48,7 +61,7 @@ const ReplyInput: FC<ReplyInputProps> = ({ post, userPfp, handleReply, initialRe
             <div className='flex-1 flex flex-col'>
                 {/* Replying to indicator */}
                 <p className='text-sm text-gray-500'>
-                    Replying to <span className='text-blood-orange hover:underline cursor-pointer'>@{post.user.name}</span>
+                    Replying to <span className='text-blood-orange hover:underline cursor-not-allowed'>@{post.user.name}</span>
                 </p>
 
                 {/* Textarea */}
