@@ -5,13 +5,19 @@ import RatingPhase from "./components/RatingPhase";
 import { submitInitialRatings } from "@/lib/firebase/firestore";
 import { useUser } from "@/providers/UserProvider";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 enum PHASE {
-    PROFILE_PHASE = 0,
-    RATING_PHASE = 1
+    INTRO_PHASE = 0,
+    PROFILE_PHASE = 1,
+    RATING_PHASE = 2
 }
 
 const header_text = [
+    {
+        header: "Welcome!",
+        subheader: "We're excited for you to try out our AI-powered discussion platform. Part of our goal for these user tests is for you to interact with and experience novel social media features involving discussions to help us get a sense of their usability."
+    },
     {
         header: "Your profile!",
         subheader: "We're assigning you this anonymous profile"
@@ -23,20 +29,20 @@ const header_text = [
 ]
 
 export default function SetupPage() {
-    const [phase, setPhase] = useState<PHASE>(PHASE.PROFILE_PHASE);
-    const [ratings, setRatings] = useState<number[]>([-1,-1,-1,-1,-1]);
+    const [phase, setPhase] = useState<PHASE>(PHASE.INTRO_PHASE);
+    const [ratings, setRatings] = useState<number[]>([-1, -1, -1, -1, -1]);
     const user = useUser();
     const router = useRouter();
-    
+
     const handlePrevClick = () => {
-        if (phase === PHASE.RATING_PHASE) {
-            setPhase(PHASE.PROFILE_PHASE);
+        if (phase !== PHASE.INTRO_PHASE) {
+            setPhase((prev) => prev === PHASE.RATING_PHASE ? PHASE.PROFILE_PHASE : PHASE.INTRO_PHASE);
         }
     }
-    
+
     const handleNextClick = async () => {
-        if (phase === PHASE.PROFILE_PHASE) {
-            setPhase(PHASE.RATING_PHASE);
+        if (phase !== PHASE.RATING_PHASE) {
+            setPhase((prev) => prev === PHASE.INTRO_PHASE ? PHASE.PROFILE_PHASE : PHASE.RATING_PHASE);
         } else {
             if (user.userId) {
                 await submitInitialRatings(user.userId, [...ratings]);
@@ -46,11 +52,11 @@ export default function SetupPage() {
             }
         }
     }
-    
+
     const handleRatingsUpdate = (_ratings: number[]) => {
         setRatings(_ratings);
     }
-    
+
     return (
         <main className="flex flex-col w-full h-screen">
             <div className="flex flex-col gap-y-4 pt-8 px-16">
@@ -60,26 +66,36 @@ export default function SetupPage() {
                 <h2 className="text-xl">
                     {header_text[phase].subheader}
                 </h2>
-            </div> 
+            </div>
             {
-                phase == PHASE.PROFILE_PHASE ? (
+                phase === PHASE.INTRO_PHASE ? (
+                    <div className="flex flex-col gap-y-4 w-full h-full justify-center items-center">
+                        <Image
+                            src='/images/minimal_y_logo.png'
+                            width={200}
+                            height={200}
+                            alt="Y Logo"
+                            className=""
+                        />
+                    </div>
+                ) : phase === PHASE.PROFILE_PHASE ? (
                     <ProfilePhase />
                 ) : (
                     <RatingPhase handleRatingsUpdate={handleRatingsUpdate} ratings={ratings} />
                 )
             }
             <div className="w-full flex">
-                <button 
-                    onClick={handlePrevClick} 
-                    disabled={phase === PHASE.PROFILE_PHASE} 
-                    className="bg-cream disabled:cursor-not-allowed disabled:hover:border-black disabled:hover:bg-cream disabled:hover:text-black disabled:opacity-25 text-lg cursor-pointer w-full py-16 border-t border-black hover:bg-blood-orange hover:border-blood-orange hover:text-cream transition-all ease-in-out duration-200 border-x"
+                <button
+                    onClick={handlePrevClick}
+                    disabled={phase === PHASE.INTRO_PHASE}
+                    className="bg-cream disabled:cursor-not-allowed font-semibold disabled:hover:border-black disabled:hover:bg-cream disabled:hover:text-black disabled:opacity-25 text-lg cursor-pointer w-full py-16 border-t border-black hover:bg-blood-orange hover:border-blood-orange hover:text-cream transition-all ease-in-out duration-200 border-x"
                 >
                     Prev
                 </button>
-                <button 
-                    onClick={handleNextClick} 
-                    disabled={phase === PHASE.RATING_PHASE && ratings.indexOf(-1) !== -1} 
-                    className="bg-cream disabled:cursor-not-allowed disabled:hover:border-black disabled:hover:bg-cream disabled:hover:text-black disabled:opacity-25 text-lg cursor-pointer w-full py-16 border-t border-r border-black hover:bg-blood-orange hover:border-blood-orange hover:text-cream transition-all ease-in-out duration-200"
+                <button
+                    onClick={handleNextClick}
+                    disabled={phase === PHASE.RATING_PHASE && ratings.indexOf(-1) !== -1}
+                    className="bg-cream disabled:cursor-not-allowed font-semibold disabled:hover:border-black disabled:hover:bg-cream disabled:hover:text-black disabled:opacity-25 text-lg cursor-pointer w-full py-16 border-t border-r border-black hover:bg-blood-orange hover:border-blood-orange hover:text-cream transition-all ease-in-out duration-200"
                 >
                     {phase === PHASE.RATING_PHASE ? "Finish" : "Next"}
                 </button>

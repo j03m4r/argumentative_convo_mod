@@ -4,6 +4,14 @@
 import { db } from './firebase';
 import { doc, getDoc, setDoc, updateDoc, arrayUnion, Timestamp } from 'firebase/firestore';
 
+function shuffleArray(array: P[]) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 export async function checkUserHasRatings(userId: string): Promise<boolean> {
     try {
         const userDoc = await getDoc(doc(db, 'users', userId));
@@ -26,19 +34,30 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
         }
     }
 
-    // TODO :: fix this issue with polarized/disagree post
     if (polarizedPosts.length > 0) {
         disagreePostIdx = polarizedPosts[Math.floor(Math.random() * polarizedPosts.length)];
+        if (ratings[disagreePostIdx] === 1) {
+            disagreePostIdx *= 2
+        } else {
+            disagreePostIdx = (disagreePostIdx*2) + 1
+        }
     }
+
+    const auxPostIdx1 = Math.floor(Math.random() * 4); 
+    const auxPostIdx2 = Math.floor(Math.random() * 4); 
+    let _posts = ["ai", "vaccine", "disagree"];
+    _posts = shuffleArray(_posts);
 
     await setDoc(docRef, {
         hasCompletedInitialRatings: true,
         initialRatings: ratings,
         disagreePostIdx: disagreePostIdx,
-        auxPostIdx1: Math.floor(Math.random() * 4),
-        auxPostIdx2: Math.floor(Math.random() * 4),
+        auxPostIdx1: auxPostIdx1,
+        auxPostIdx2: auxPostIdx2,
+        randomPostOrder: _posts,
         initialResponse: '',
         revisedResponse: '',
+        comment: '',
         conversation: [],
         finishedModeration: false,
         hasUpvoted: null,
@@ -59,8 +78,17 @@ export async function updateInitialResponse(userId: string, response: string) {
 export async function updateRevisedResponse(userId: string, response: string) {
     const docRef = doc(db, 'users', userId);
 
-    await updateDoc(docRef, {
+await updateDoc(docRef, {
         revisedResponse: response,
+        updatedAt: Timestamp.now(),
+    });
+}
+
+export async function updateComment(userId: string, comment: string) {
+    const docRef = doc(db, 'users', userId);
+
+    await updateDoc(docRef, {
+        comment: comment,
         updatedAt: Timestamp.now(),
     });
 }

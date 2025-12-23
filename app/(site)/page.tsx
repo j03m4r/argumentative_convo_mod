@@ -8,6 +8,7 @@ import { OrbitProgress } from "react-loading-indicators";
 import Post from "./components/Post";
 import { Tooltip } from 'react-tooltip'
 
+// TODO :: need to make the random order of posts consistent across refreshes; maybe do this in firestore upon initial rating submission
 export default function HomePage() {
     const [randomPosts, setRandomPosts] = useState<P[]>([]);
     const [disagreePost, setDisagreePost] = useState<P | null>(null);
@@ -18,14 +19,6 @@ export default function HomePage() {
     const [vaccinePostIdx, setVaccinePostIdx] = useState(-1);
     const [isLoading, setIsLoading] = useState(true);
     const { userId } = useUser();
-
-    function shuffleArray(array: P[]) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-    }
 
     useEffect(() => {
         async function fetchPosts() {
@@ -54,8 +47,17 @@ export default function HomePage() {
                 setDisagreePost(_disagreePost);
                 setDisagreePostIdx(userData.disagreePostIdx);
 
-                let _posts = [_aiPost, _vaccinePost, _disagreePost];
-                _posts = shuffleArray(_posts);
+                let _posts = [];
+                for (let i = 0; i < userData.randomPostOrder.length; i++) {
+                    const _postType = userData.randomPostOrder[i];
+                    if (_postType === "ai") {
+                        _posts.push(_aiPost);
+                    } else if (_postType === "vaccine") {
+                        _posts.push(_vaccinePost);
+                    } else {
+                        _posts.push(_disagreePost);
+                    }
+                }
                 setRandomPosts(_posts);
 
                 // setTimeout(function() {
