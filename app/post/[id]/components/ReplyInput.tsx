@@ -62,7 +62,7 @@ const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, 
             <div className='flex-1 flex flex-col'>
                 {/* Replying to indicator */}
                 <p className='text-sm text-gray-500'>
-                    Replying to <span className='text-blood-orange hover:underline cursor-not-allowed'>@{post.user.name}</span>
+                    Replying to <span className='text-blood-orange cursor-not-allowed'>@{post.user.name}</span>
                 </p>
 
                 {/* Textarea */}

@@ -10,6 +10,8 @@ import { OrbitProgress } from "react-loading-indicators";
 import Image from 'next/image';
 import ReplyInput from "./ReplyInput";
 import { useRouter } from 'next/navigation';
+import { Tooltip } from 'react-tooltip'
+import { useCallback } from 'react';
 
 interface PageContentProps {
     post: Post;
@@ -38,6 +40,20 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
     const [finishedModeration, setFinishedModeration] = useState(false);
 
     const [comment, setComment] = useState<string>("");
+
+    const [isCopied, setIsCopied] = useState(false);
+
+    const copyToClipboard = useCallback(async () => {
+        if (!userId) return;
+        try {
+            await navigator.clipboard.writeText(userId);
+            setIsCopied(true);
+            // Reset the "copied" state after a short delay
+            setTimeout(() => setIsCopied(false), 10000);
+        } catch (err) {
+            console.error('Failed to copy text: ', err);
+        }
+    }, [userId]);
 
     // Load saved conversation on mount
     useEffect(() => {
@@ -78,7 +94,7 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                         setIsModeration(true);
                     }
                     setInitialReply(userData.initialResponse || "");
-                    setRevisedReply(userData.comment.length>0 ? "" : (userData.revisedResponse || ""));
+                    setRevisedReply(userData.comment.length > 0 ? "" : (userData.revisedResponse || ""));
                     if (userData.hasUpvoted) {
                         setUpvoteCount(1);
                     } else if (userData.hasUpvoted === false) {
@@ -131,7 +147,6 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
     const handleReply = (reply: string) => {
         if (userId) {
             if (finishedModeration) {
-                // TODO :: move to next phase of study
                 setComment(reply);
                 updateComment(userId, reply);
                 setRevisedReply("")
@@ -207,7 +222,7 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                     <div className="flex flex-col w-full gap-y-1">
                         <div className="flex w-full flex-col">
                             <div className="flex w-full gap-x-1 items-center">
-                                <h2 className="hover:underline cursor-not-allowed text-blood-orange text-sm">{post.user.name}</h2>
+                                <h2 className="cursor-not-allowed text-blood-orange text-sm">{post.user.name}</h2>
                                 <h2 className="text-sm ml-1 font-light">@{post.user.name}</h2>
                                 <p className='font-light'>•</p>
                                 <p className='text-sm font-light'>{post.timestamp}</p>
@@ -272,7 +287,7 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                             {isLoadingModeration ? (
                                 <OrbitProgress color="#ff3f34" size="medium" text="" textColor="" />
                             ) : comment.length ? (
-                                <div className='flex h-full w-full items-start py-4'>
+                                <div className='flex flex-col h-full w-full items-center py-4 justify-between'>
                                     <div className='flex w-full gap-x-1'>
                                         <div className='flex justify-center'>
                                             <Image
@@ -286,7 +301,7 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                                         <div className="flex flex-col w-full gap-y-1">
                                             <div className="flex w-full flex-col">
                                                 <div className="flex w-full gap-x-1 items-center">
-                                                    <h2 className="hover:underline font-semibold cursor-not-allowed text-blood-orange text-sm">5121329495</h2>
+                                                    <h2 className="cursor-not-allowed text-blood-orange text-sm">5121329495</h2>
                                                     <h2 className="text-sm ml-1 font-light">@5121329495</h2>
                                                     <p className='font-light'>•</p>
                                                     <p className='text-sm font-light'>Now</p>
@@ -311,6 +326,13 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                                             </div>
                                         </div>
                                     </div>
+                                    <button onClick={copyToClipboard} className='flex w-full gap-x-2 py-16 text-blood-orange border rounded-md justify-center items-center cursor-pointer transition-colors duration-200 ease-in-out font-semibold text-xl' data-tooltip-id="codeCopy" data-tooltip-content={isCopied ? "Copied!" : "Click to copy"} data-tooltip-place="top">
+                                        <Tooltip id="codeCopy" isOpen style={{ backgroundColor: "#ff3f34", color: "#faf9f6", fontWeight: "700", zIndex: 50 }} />
+                                        <p>
+                                            {userId}
+                                        </p>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width={24} className='fill-blood-orange' viewBox="0 0 640 640"><path d="M288 64C252.7 64 224 92.7 224 128L224 384C224 419.3 252.7 448 288 448L480 448C515.3 448 544 419.3 544 384L544 183.4C544 166 536.9 149.3 524.3 137.2L466.6 81.8C454.7 70.4 438.8 64 422.3 64L288 64zM160 192C124.7 192 96 220.7 96 256L96 512C96 547.3 124.7 576 160 576L352 576C387.3 576 416 547.3 416 512L416 496L352 496L352 512L160 512L160 256L176 256L176 192L160 192z" /></svg>
+                                    </button>
                                 </div>
                             ) : (
                                 <p className='text-sm font-light'>Start the conversation...</p>

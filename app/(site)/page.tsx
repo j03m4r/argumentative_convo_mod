@@ -8,7 +8,6 @@ import { OrbitProgress } from "react-loading-indicators";
 import Post from "./components/Post";
 import { Tooltip } from 'react-tooltip'
 
-// TODO :: need to make the random order of posts consistent across refreshes; maybe do this in firestore upon initial rating submission
 export default function HomePage() {
     const [randomPosts, setRandomPosts] = useState<P[]>([]);
     const [disagreePost, setDisagreePost] = useState<P | null>(null);

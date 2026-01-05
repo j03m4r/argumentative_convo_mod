@@ -32,7 +32,7 @@ const Post: FC<PostProps> = ({ postType, postIdx, post, randIdx }) => {
             <div className="flex flex-col w-full gap-y-1">
                 <div className="flex w-full flex-col">
                     <div className="flex w-full gap-x-1 items-center">
-                        <h2 className="hover:underline cursor-not-allowed font-semibold text-blood-orange text-sm">{post.user.name}</h2>
+                        <h2 className="cursor-not-allowed text-blood-orange text-sm">{post.user.name}</h2>
                         <h2 className="text-sm ml-1 font-light">@{post.user.name}</h2>
                         <p className='font-light'>•</p>
                         <p className='text-sm font-light'>{post.timestamp}</p>
@@ -72,7 +72,7 @@ const Post: FC<PostProps> = ({ postType, postIdx, post, randIdx }) => {
             <div className="flex flex-col w-full gap-y-1">
                 <div className="flex w-full flex-col">
                     <div className="flex w-full gap-x-1 items-center">
-                        <h2 className="cursor-pointer text-blood-orange text-sm">{post.user.name}</h2>
+                        <h2 className="cursor-not-allowed text-blood-orange text-sm">{post.user.name}</h2>
                         <h2 className="text-sm ml-1 font-light">@{post.user.name}</h2>
                         <p className='font-light'>•</p>
                         <p className='text-sm font-light'>{post.timestamp}</p>
