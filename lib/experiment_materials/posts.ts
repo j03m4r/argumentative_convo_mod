@@ -64,7 +64,7 @@ export const posts: Post[] = [
         timestamp: "5h"
     },
     {
-        title: "Being is gay is wrong according to my religious views",
+        title: "Being is gay is wrong",
         content: "While Christ doesn't explicitly address it in the New Testament, God does condemn it in the Old Testament, which suggests consistency across the Trinity - God, Christ, and the Holy Spirit. I think an important theological distinction should be made clear between orientation and behavior. According to God's view, experiencing same-sex attraction isn't inherently sinful. Rather, acting on those attractions is what conflicts with biblical standards. This distinction mirrors how many other faith traditions differentiate between temptation and action, recognizing the complexity of human experience while maintaining doctrinal principles.",
         user: {
             name: "KneelRock7876",
