@@ -14,7 +14,7 @@ interface Message {
 
 interface ChatInterfaceProps {
     userPfp: string;
-    initialSystemPrompt?: string;
+    initialSystemPrompt?: string|null;
     post: Post | null;
     initialReply: string;
     handleFinishModeration: (messages: Message[]) => void;
@@ -42,9 +42,8 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
     useEffect(() => {
         // Only initialize if we haven't already and there are no saved messages
         if (initialSystemPrompt && messages.length === 0 && !hasInitialized.current) {
-            hasInitialized.current = true; // Mark as initialized immediately
+            hasInitialized.current = true;
             initializeChat();
-            console.log('Initializing chat');
         }
     }, [initialSystemPrompt, messages.length]);
 

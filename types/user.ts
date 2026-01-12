@@ -13,6 +13,7 @@ export type UserData = {
   conversation: string[];
   finishedModeration: boolean;
   hasUpvoted: boolean|null;
+  argumentationType: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 };

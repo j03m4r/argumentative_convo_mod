@@ -2,7 +2,7 @@
 import type { FC } from 'react';
 import ChatInterface from "./ChatInterface";
 import { Post } from "@/lib/experiment_materials/posts";
-import { persuasion_prompt } from "@/lib/experiment_materials/prompts";
+import { deliberation_prompt, discovery_prompt, eristic_prompt, information_seeking_prompt, inquiry_prompt, negotiation_prompt, persuasion_prompt } from "@/lib/experiment_materials/prompts";
 import { updateInitialResponse, getUserData, updateFinishedModerationStatus, updateRevisedResponse, updateUpVoteStatus, addConversationMessages, updateComment } from "@/lib/firebase/firestore";
 import { useState, useEffect } from "react";
 import { useUser } from "@/providers/UserProvider";
@@ -27,7 +27,7 @@ interface Message {
 const PageContent: FC<PageContentProps> = ({ post }) => {
     const [isLoadingModeration, setIsLoadingModeration] = useState(false);
     const [isModeration, setIsModeration] = useState(false);
-    const prompt = persuasion_prompt;
+    const [prompt, setPrompt] = useState<string|null>(null);
     const [initialReply, setInitialReply] = useState<string>("");
     const [revisedReply, setRevisedReply] = useState<string>("");
     const { userId } = useUser();
@@ -66,6 +66,43 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
             try {
                 const userData = await getUserData(userId);
                 if (userData) {
+                    let _prompt = null;
+                    if (userData.argumentationType) {
+                        switch (userData.argumentationType) {
+                            case "persuasion":
+                                setPrompt(persuasion_prompt);
+                                _prompt = persuasion_prompt;
+                                break;
+                            case "deliberation":
+                                setPrompt(deliberation_prompt);
+                                _prompt = deliberation_prompt;
+                                break;
+                            case "negotiation":
+                                setPrompt(negotiation_prompt);
+                                _prompt = negotiation_prompt;
+                                break;
+                            case "inquiry":
+                                setPrompt(inquiry_prompt);
+                                _prompt = inquiry_prompt;
+                                break;
+                            case "information_seeking":
+                                setPrompt(information_seeking_prompt);
+                                _prompt = information_seeking_prompt;
+                                break;
+                            case "eristic":
+                                setPrompt(eristic_prompt);
+                                _prompt = eristic_prompt;
+                                break;
+                            case "discovery":
+                                setPrompt(discovery_prompt);
+                                _prompt = discovery_prompt;
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                    if (!_prompt) return;
+
                     if (userData.finishedModeration) {
                         setFinishedModeration(true);
                     } else if (userData.conversation && userData.conversation.length > 0) {
@@ -82,7 +119,7 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                             const systemMessage: Message = {
                                 id: 'system',
                                 role: 'system',
-                                content: prompt.replaceAll("{{post_title}}", post.title)
+                                content: _prompt.replaceAll("{{post_title}}", post.title)
                                     .replaceAll("{{post_content}}", post.content)
                                     .replaceAll("{{responders_message}}", userData.initialResponse || ""),
                                 timestamp: new Date()
