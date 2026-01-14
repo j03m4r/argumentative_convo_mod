@@ -98,9 +98,12 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                                 _prompt = discovery_prompt;
                                 break;
                             default:
+                                setPrompt("control");
+                                _prompt = "control";
                                 break;
                         }
                     }
+
                     if (!_prompt) return;
 
                     if (userData.finishedModeration) {
@@ -191,10 +194,17 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                 updateInitialResponse(userId, reply)
                 setInitialReply(reply)
                 setIsLoadingModeration(true);
-                setTimeout(function() {
-                    setIsModeration(true);
-                    setIsLoadingModeration(false);
-                }, 2000);
+                if (prompt === "control") {
+                    setTimeout(function() {
+                        setIsLoadingModeration(false);
+                        setFinishedModeration(true);
+                    }, 20000);
+                } else {
+                    setTimeout(function() {
+                        setIsModeration(true);
+                        setIsLoadingModeration(false);
+                    }, 2000);
+                }
             }
         }
     }

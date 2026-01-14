@@ -48,7 +48,7 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
     let _posts = ["ai", "vaccine", "disagree"];
     _posts = shuffleArray(_posts);
 
-    const argumentation_types = ["persuasion", "negotiation", "deliberation", "inquiry", "information_seeking", "eristic", "discovery"];
+    const argumentation_types = ["control", "persuasion", "negotiation", "deliberation", "inquiry", "information_seeking", "eristic", "discovery"];
     const randArgumentationIdx = Math.floor(Math.random() * argumentation_types.length);
     const argumentationType = argumentation_types[randArgumentationIdx];
 
