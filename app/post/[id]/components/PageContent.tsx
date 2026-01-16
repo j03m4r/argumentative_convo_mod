@@ -327,8 +327,9 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                                 handleReply={handleReply}
                                 initialReply={finishedModeration ? revisedReply : initialReply}
                                 updateReply={updateReply}
-                                userPfp="/images/avatar_mosaic.png"
+                                userPfp="/images/avatar_mosaic.png" 
                             />
+                            <Tooltip id="revisedReply" isOpen={finishedModeration&&!comment.length} style={{ backgroundColor: "#ff3f34", color: "#faf9f6", fontWeight: "700", zIndex: 50 }} />
                         </div>
                         <div className="flex-1 flex justify-center items-center">
                             {isLoadingModeration ? (
