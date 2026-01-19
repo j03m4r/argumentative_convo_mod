@@ -216,7 +216,7 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
     return (
         <div className="flex flex-col h-full w-full" data-tooltip-id="moderatorMessageCount" data-tooltip-content="Enter at least 3 messages" data-tooltip-place="right">
             <Tooltip id="moderatorMessageCount" isOpen style={{ backgroundColor: "#ff3f34", color: "#faf9f6", fontWeight: "700", zIndex: 50 }} />
-            <div className='flex w-full border-b border-black'>
+            <div className='flex w-full border-2 mt-1 border-blood-orange shadow-lg'>
                 <div className='p-4 flex justify-center items-center'>
                     <svg xmlns="http://www.w3.org/2000/svg" width={48} className='fill-blood-orange' viewBox="0 0 640 640"><path d="M320 64C334.7 64 348.2 72.1 355.2 85L571.2 485C577.9 497.4 577.6 512.4 570.4 524.5C563.2 536.6 550.1 544 536 544L104 544C89.9 544 76.8 536.6 69.6 524.5C62.4 512.4 62.1 497.4 68.8 485L284.8 85C291.8 72.1 305.3 64 320 64zM320 416C302.3 416 288 430.3 288 448C288 465.7 302.3 480 320 480C337.7 480 352 465.7 352 448C352 430.3 337.7 416 320 416zM320 224C301.8 224 287.3 239.5 288.6 257.7L296 361.7C296.9 374.2 307.4 384 319.9 384C332.5 384 342.9 374.3 343.8 361.7L351.2 257.7C352.5 239.5 338.1 224 319.8 224z" /></svg>
                 </div>
@@ -225,17 +225,9 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
                         Hold on...
                     </h1>
                     <h2 className="text-lg">
-                        Before you post your response to this discussion forum, we would like to have a conversation with you.
+                        Before you post your response to this discussion forum, our AI chatbot would like to have a conversation with you.
                     </h2>
                 </div>
-                {messages.length >= 8 && (
-                    <button 
-                        onClick={() => handleFinishModeration(messages)} 
-                        className='flex border-x px-8 py-2 font-bold cursor-pointer justify-center items-center border-black transition-all duration-200 ease-in-out bg-blood-orange text-cream hover:bg-cream hover:text-blood-orange'
-                    >
-                        Finish Chatting
-                    </button>
-                )}
             </div>
             <div className="flex-1 overflow-y-scroll px-4 py-4 space-y-4">
                 {messages.map((message) => (
@@ -254,11 +246,11 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
                                     ? 'bg-blood-orange text-cream'
                                     : 'bg-gray-100 text-black border border-gray-200'
                                     }`}>
-                                    <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                                    <p className="whitespace-pre-wrap leading-relaxed">
                                         {message.content}
                                     </p>
                                 </div>
-                                <span className="text-xs text-gray-400 mt-1">
+                                <span className="text-sm text-gray-400 mt-1">
                                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </span>
                             </div>
@@ -299,49 +291,61 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
                 <div ref={messagesEndRef} />
             </div>
 
-            <div className='flex w-full border-t border-black pt-4 px-4 gap-x-3'>
-                <div className='shrink-0'>
-                    <Image
-                        src={userPfp}
-                        width={40}
-                        height={40}
-                        alt="Your profile picture"
-                        className="w-10 h-10 rounded-full"
-                    />
-                </div>
+            <div className='flex w-full'>
+                <div className='flex w-full border-t border-black pt-4 px-4 gap-x-3'>
+                    <div className='shrink-0'>
+                        <Image
+                            src={userPfp}
+                            width={40}
+                            height={40}
+                            alt="Your profile picture"
+                            className="w-10 h-10 rounded-full"
+                        />
+                    </div>
 
-                <div className='flex-1 flex flex-col'>
-                    <textarea
-                        ref={textareaRef}
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        onFocus={() => setIsFocused(true)}
-                        onBlur={() => setIsFocused(false)}
-                        placeholder='Type your message'
-                        disabled={isLoading}
-                        className='w-full resize-none outline-none text-lg min-h-[60px] max-h-[200px] overflow-y-auto placeholder:text-gray-400 disabled:opacity-50'
-                        rows={1}
-                    />
+                    <div className='flex-1 flex flex-col'>
+                        <textarea
+                            ref={textareaRef}
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            onFocus={() => setIsFocused(true)}
+                            onBlur={() => setIsFocused(false)}
+                            placeholder='Click here to type your message'
+                            disabled={isLoading}
+                            className='w-full resize-none outline-none text-lg min-h-[60px] max-h-[200px] overflow-y-auto placeholder:text-gray-400 disabled:opacity-50'
+                            rows={1}
+                        />
 
-                    {(isFocused || input.length > 0) && (
-                        <div className='flex items-center justify-between pt-2'>
-                            <span className='text-xs text-gray-400'>Press Enter to send, Shift+Enter for new line</span>
-                            <button
-                                onClick={handleSend}
-                                disabled={!input.trim() || isLoading}
-                                className='flex gap-x-1 px-4 py-2 border-x border-t border-black cursor-pointer 
-                             disabled:opacity-50 disabled:cursor-not-allowed 
-                             transition-all duration-200 hover:text-blood-orange disabled:hover:text-black'
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width={20} className='fill-current' viewBox="0 0 512 512">
-                                    <path d="M16.1 260.2c-22.6 12.9-20.5 47.3 3.6 57.3L160 376V479.3c0 18.1 14.6 32.7 32.7 32.7c9.7 0 18.9-4.3 25.1-11.8l62-74.3 123.9 51.6c18.9 7.9 40.8-4.5 43.9-24.7l64-416c1.9-12.1-3.4-24.3-13.5-31.2s-23.3-7.5-34-1.4l-448 256zm52.1 25.5L409.7 90.6 190.1 336l1.2 1L68.2 285.7zM403.3 425.4L236.7 355.9 450.8 116.6 403.3 425.4z" />
-                                </svg>
-                                Send
-                            </button>
-                        </div>
-                    )}
+                        {(isFocused || input.length > 0) && (
+                            <div className='flex items-center justify-between pt-2'>
+                                <span className='text-xs text-gray-400'>Press Enter to send, Shift+Enter for new line</span>
+                                <button
+                                    onClick={handleSend}
+                                    disabled={!input.trim() || isLoading}
+                                    className='flex gap-x-1 px-4 py-2 border-x border-t border-black cursor-pointer 
+                                disabled:opacity-50 disabled:cursor-not-allowed 
+                                transition-all duration-200 hover:text-blood-orange disabled:hover:text-black'
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width={20} className='fill-current' viewBox="0 0 512 512">
+                                        <path d="M16.1 260.2c-22.6 12.9-20.5 47.3 3.6 57.3L160 376V479.3c0 18.1 14.6 32.7 32.7 32.7c9.7 0 18.9-4.3 25.1-11.8l62-74.3 123.9 51.6c18.9 7.9 40.8-4.5 43.9-24.7l64-416c1.9-12.1-3.4-24.3-13.5-31.2s-23.3-7.5-34-1.4l-448 256zm52.1 25.5L409.7 90.6 190.1 336l1.2 1L68.2 285.7zM403.3 425.4L236.7 355.9 450.8 116.6 403.3 425.4z" />
+                                    </svg>
+                                    Send
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
+                
+                {messages.length >= 8&&(
+                    <button 
+                        onClick={() => handleFinishModeration(messages)} 
+                        className={`flex border-x border-t px-16 py-2 font-bold justify-center items-center border-black transition-all duration-200 ease-in-out
+                        ${messages.length >= 8 ? "hover:bg-cream hover:text-blood-orange bg-blood-orange text-cream cursor-pointer " : "bg-cream text-blood-orange border-blood-orange cursor-not-allowed opacity-50"}`}
+                    >
+                        Click to finish chatting; return to post
+                    </button>
+                )}
             </div>
         </div>
     );

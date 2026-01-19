@@ -16,7 +16,7 @@ enum PHASE {
 const header_text = [
     {
         header: "Welcome!",
-        subheader: "We're excited for you to try out our AI-powered discussion platform. Part of our goal for these user tests is for you to interact with and experience novel social media features involving discussions to help us get a sense of their usability."
+        subheader: "We're excited for you to try out our AI-powered discussion platform. Part of our goal for these user tests is for you to interact with and experience novel social media features involving discussions to help us get a sense of their usability. In your interactions with our interface, you will (1) specify your content preferences, (2) respond to a post on your home feed, (3) engage with an AI-powered chatbot. Note that many features will be unavailable as this is just a beta testing of the platform."
     },
     {
         header: "Your profile!",
@@ -63,8 +63,19 @@ export default function SetupPage() {
                 <h1 className="text-4xl font-bold text-blood-orange">
                     Let&apos;s get you setup • {header_text[phase].header}
                 </h1>
-                <h2 className="text-xl">
-                    {header_text[phase].subheader}
+                <h2 className="text-2xl">
+                    {phase === PHASE.INTRO_PHASE ? (
+                        <div>
+                            We're excited for you to try out our AI-powered discussion platform. Part of our goal for these user tests is for you to interact with and experience novel social media features involving discussions to help us get a sense of their usability. 
+                            In your interactions with our interface, you will:
+                            <ol className="p-4">
+                                <li>1. Specify your content preferences</li>
+                                <li>2. Respond to a post on your home feed</li>
+                                <li>3. Engage with an AI-powered chatbot</li>
+                            </ol> 
+                            <b>Note that many features will be unavailable/unclickable during this test</b>
+                        </div>
+                    ) : (header_text[phase].subheader)}
                 </h2>
             </div>
             {

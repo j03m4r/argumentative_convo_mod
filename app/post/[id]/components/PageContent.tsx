@@ -216,7 +216,10 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
             updateFinishedModerationStatus(userId, true);
             addConversationMessages(userId, messages);
         }
+        setModalIsOpen(true);
     }
+
+    const [modalIsOpen, setModalIsOpen] = useState(false);
 
     const goBack = () => {
         if (userId && initialReply) {
@@ -245,7 +248,17 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
     }
 
     return (
-        <div className="flex flex-col h-screen w-full">
+        <div className="flex flex-col h-screen w-full relative">
+            {modalIsOpen&&(
+                <>
+                    <div className='fixed z-20 bg-cover bg-cream opacity-75 blur-xl w-screen h-screen left-0 top-0 transition-colors duration-200 ease-in-out' onClick={() => setModalIsOpen(false)}>
+                    </div>
+                    <div className='z-50 absolute blur-none opacity-100 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-cream p-16 rounded-xl shadow-xl border text-xl'>
+                        <svg onClick={() => setModalIsOpen(false)} xmlns="http://www.w3.org/2000/svg" width={24} className='fill-black hover:fill-blood-orange cursor-pointer absolute right-4 top-4 transition-colors duration-200 ease-in-out' viewBox="0 0 640 640"><path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z"/></svg>
+                        Now that you have finished conversing with our AI chatbot, you are free to close this modal and <b className='text-blood-orange'>finish responding to the post.</b>
+                    </div>
+                </>
+            )}
             <div className="flex justify-between items-center w-full py-2 shrink-0">
                 <button onClick={goBack} className="px-4 py-2 hover:text-blood-orange flex justify-center items-center cursor-pointer transition-colors duration-200 ease-in-out">
                     <svg xmlns="http://www.w3.org/2000/svg" width={24} className="fill-current" viewBox="0 0 640 640"><path d="M73.4 297.4C60.9 309.9 60.9 330.2 73.4 342.7L233.4 502.7C245.9 515.2 266.2 515.2 278.7 502.7C291.2 490.2 291.2 469.9 278.7 457.4L173.3 352L544 352C561.7 352 576 337.7 576 320C576 302.3 561.7 288 544 288L173.3 288L278.7 182.6C291.2 170.1 291.2 149.8 278.7 137.3C266.2 124.8 245.9 124.8 233.4 137.3L73.4 297.3z" /></svg>
@@ -269,14 +282,14 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                     <div className="flex flex-col w-full gap-y-1">
                         <div className="flex w-full flex-col">
                             <div className="flex w-full gap-x-1 items-center">
-                                <h2 className="cursor-not-allowed text-blood-orange text-sm">{post.user.name}</h2>
-                                <h2 className="text-sm ml-1 font-light">@{post.user.name}</h2>
+                                <h2 className="cursor-not-allowed text-blood-orange">{post.user.name}</h2>
+                                <h2 className="ml-1 font-light">@{post.user.name}</h2>
                                 <p className='font-light'>•</p>
-                                <p className='text-sm font-light'>{post.timestamp}</p>
+                                <p className='font-light'>{post.timestamp}</p>
                             </div>
-                            <h2 className='font-semibold'>{post.title}</h2>
+                            <h2 className='text-lg font-semibold'>{post.title}</h2>
                         </div>
-                        <p>{post.content}</p>
+                        <p className='text-lg'>{post.content}</p>
                     </div>
                 </div>
 
@@ -319,7 +332,7 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                         <div className='relative flex w-full items-center'>
                             <button onClick={() => updateReply(initialReply)} className={`${(!finishedModeration || revisedReply || comment.length) && 'hidden'} gap-x-2 absolute right-4 top-4 rounded-md bg-blood-orange text-cream px-2 py-1 hover:bg-blood-orange/80 cursor-pointer transition-colors duration-200 ease-in-out flex justify-center items-center`}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width={24} className='fill-cream' viewBox="0 0 640 640"><path d="M96 128C60.7 128 32 156.7 32 192L32 448C32 483.3 60.7 512 96 512L544 512C579.3 512 608 483.3 608 448L608 192C608 156.7 579.3 128 544 128L96 128zM112 192L144 192C152.8 192 160 199.2 160 208L160 240C160 248.8 152.8 256 144 256L112 256C103.2 256 96 248.8 96 240L96 208C96 199.2 103.2 192 112 192zM96 304C96 295.2 103.2 288 112 288L144 288C152.8 288 160 295.2 160 304L160 336C160 344.8 152.8 352 144 352L112 352C103.2 352 96 344.8 96 336L96 304zM208 192L240 192C248.8 192 256 199.2 256 208L256 240C256 248.8 248.8 256 240 256L208 256C199.2 256 192 248.8 192 240L192 208C192 199.2 199.2 192 208 192zM192 304C192 295.2 199.2 288 208 288L240 288C248.8 288 256 295.2 256 304L256 336C256 344.8 248.8 352 240 352L208 352C199.2 352 192 344.8 192 336L192 304zM208 384L432 384C440.8 384 448 391.2 448 400L448 432C448 440.8 440.8 448 432 448L208 448C199.2 448 192 440.8 192 432L192 400C192 391.2 199.2 384 208 384zM288 208C288 199.2 295.2 192 304 192L336 192C344.8 192 352 199.2 352 208L352 240C352 248.8 344.8 256 336 256L304 256C295.2 256 288 248.8 288 240L288 208zM304 288L336 288C344.8 288 352 295.2 352 304L352 336C352 344.8 344.8 352 336 352L304 352C295.2 352 288 344.8 288 336L288 304C288 295.2 295.2 288 304 288zM384 208C384 199.2 391.2 192 400 192L432 192C440.8 192 448 199.2 448 208L448 240C448 248.8 440.8 256 432 256L400 256C391.2 256 384 248.8 384 240L384 208zM400 288L432 288C440.8 288 448 295.2 448 304L448 336C448 344.8 440.8 352 432 352L400 352C391.2 352 384 344.8 384 336L384 304C384 295.2 391.2 288 400 288zM480 208C480 199.2 487.2 192 496 192L528 192C536.8 192 544 199.2 544 208L544 240C544 248.8 536.8 256 528 256L496 256C487.2 256 480 248.8 480 240L480 208zM496 288L528 288C536.8 288 544 295.2 544 304L544 336C544 344.8 536.8 352 528 352L496 352C487.2 352 480 344.8 480 336L480 304C480 295.2 487.2 288 496 288z" /></svg>
-                                <p className='font-semibold text-sm'>Fill with initial reply</p>
+                                <p className='font-semibold text-sm'>Click to fill with initial reply</p>
                             </button>
                             <ReplyInput
                                 post={post}
@@ -329,7 +342,6 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                                 updateReply={updateReply}
                                 userPfp="/images/avatar_mosaic.png" 
                             />
-                            <Tooltip id="revisedReply" isOpen={finishedModeration&&!comment.length} style={{ backgroundColor: "#ff3f34", color: "#faf9f6", fontWeight: "700", zIndex: 50 }} />
                         </div>
                         <div className="flex-1 flex justify-center items-center">
                             {isLoadingModeration ? (

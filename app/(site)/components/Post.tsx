@@ -19,7 +19,7 @@ const Post: FC<PostProps> = ({ postType, postIdx, post, randIdx }) => {
     const isReplyPost = postType==="p"
 
     return isReplyPost ? (
-        <Link href={`post/${postType}-${postIdx}`} className="hover:bg-blood-orange/5 rounded-xl group flex w-full gap-x-1 pt-4 pb-2 px-2 cursor-pointer" data-tooltip-id="replyPost" data-tooltip-content="The post you will reply to" data-tooltip-place={randIdx===0 ? "bottom-end" : "right"}>
+        <Link href={`post/${postType}-${postIdx}`} className="hover:bg-blood-orange/5 rounded-xl group flex w-full gap-x-1 pt-4 pb-2 px-2 cursor-pointer" data-tooltip-id="replyPost" data-tooltip-content="The post you will reply to; click post to proceed" data-tooltip-place={randIdx===0 ? "bottom-end" : "right"}>
             <div className="flex justify-center">
                 <Image
                     src={post.user.pfp_src}
@@ -32,14 +32,14 @@ const Post: FC<PostProps> = ({ postType, postIdx, post, randIdx }) => {
             <div className="flex flex-col w-full gap-y-1">
                 <div className="flex w-full flex-col">
                     <div className="flex w-full gap-x-1 items-center">
-                        <h2 className="cursor-not-allowed text-blood-orange text-sm">{post.user.name}</h2>
-                        <h2 className="text-sm ml-1 font-light">@{post.user.name}</h2>
+                        <h2 className="cursor-not-allowed text-blood-orange">{post.user.name}</h2>
+                        <h2 className="ml-1 font-light">@{post.user.name}</h2>
                         <p className='font-light'>•</p>
-                        <p className='text-sm font-light'>{post.timestamp}</p>
+                        <p className='font-light'>{post.timestamp}</p>
                     </div>
-                    <h2 className='font-semibold group-hover:underline'>{post.title}</h2>
+                    <h2 className='text-lg font-semibold group-hover:underline'>{post.title}</h2>
                 </div>
-                <p>{post.content}</p>
+                <p className='text-lg'>{post.content}</p>
                 <div className='w-full flex justify-between items-center'>
                     <div className="flex items-center justify-center gap-x-8 py-2">
                         <div className={`text-sm flex items-center justify-center gap-x-1`}>
@@ -72,14 +72,14 @@ const Post: FC<PostProps> = ({ postType, postIdx, post, randIdx }) => {
             <div className="flex flex-col w-full gap-y-1">
                 <div className="flex w-full flex-col">
                     <div className="flex w-full gap-x-1 items-center">
-                        <h2 className="cursor-not-allowed text-blood-orange text-sm">{post.user.name}</h2>
-                        <h2 className="text-sm ml-1 font-light">@{post.user.name}</h2>
+                        <h2 className="cursor-not-allowed text-blood-orange">{post.user.name}</h2>
+                        <h2 className="ml-1 font-light">@{post.user.name}</h2>
                         <p className='font-light'>•</p>
-                        <p className='text-sm font-light'>{post.timestamp}</p>
+                        <p className='font-light'>{post.timestamp}</p>
                     </div>
-                    <h2 className='font-semibold'>{post.title}</h2>
+                    <h2 className='font-semibold text-lg'>{post.title}</h2>
                 </div>
-                <p>{post.content}</p>
+                <p className='text-lg'>{post.content}</p>
                 <div className='w-full flex justify-between items-center'>
                     <div className="flex items-center justify-center gap-x-8 py-2">
                         <div className={`text-sm flex items-center justify-center gap-x-1`}>

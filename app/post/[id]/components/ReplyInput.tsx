@@ -46,7 +46,7 @@ const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, 
     };
 
     return (
-        <div className='flex w-full border-b border-black pt-4 px-4 gap-x-3' data-tooltip-id="revisedReply" data-tooltip-content="Revise your reply" data-tooltip-place="right">
+        <div className='flex w-full border-b border-black pt-4 px-4 gap-x-3'>
             {/* Profile Picture */}
             <div className='shrink-0'>
                 <Image

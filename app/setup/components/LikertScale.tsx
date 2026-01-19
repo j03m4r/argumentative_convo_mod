@@ -48,7 +48,7 @@ const LikertScale: FC<LikertScaleProps> = ({
                             onChange={() => handleSelection(option.val)}
                             className='cursor-pointer w-5 h-5'
                         />
-                        <span className="text-sm font-light text-center">{option.label}</span>
+                        <span className="font-light text-center">{option.label}</span>
                     </label>
                 ))}
             </div>
