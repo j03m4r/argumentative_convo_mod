@@ -15,16 +15,16 @@ enum PHASE {
 
 const header_text = [
     {
-        header: "Welcome!",
+        header: "Welcome",
         subheader: "We're excited for you to try out our AI-powered discussion platform. Part of our goal for these user tests is for you to interact with and experience novel social media features involving discussions to help us get a sense of their usability. In your interactions with our interface, you will (1) specify your content preferences, (2) respond to a post on your home feed, (3) engage with an AI-powered chatbot. Note that many features will be unavailable as this is just a beta testing of the platform."
     },
     {
-        header: "Your profile!",
+        header: "Your profile",
         subheader: "We're assigning you this anonymous profile"
     },
     {
-        header: "Your preferences!",
-        subheader: "Help us personalize your feed by rating these opinions"
+        header: "Your preferences",
+        subheader: "Help us personalize your feed by rating how much you agree with these statements"
     }
 ]
 
@@ -63,49 +63,41 @@ export default function SetupPage() {
                 <h1 className="text-4xl font-bold text-blood-orange">
                     Let&apos;s get you setup • {header_text[phase].header}
                 </h1>
-                <h2 className="text-2xl">
+                <h2 className="text-xl xl:text-2xl">
                     {phase === PHASE.INTRO_PHASE ? (
                         <div>
-                            We're excited for you to try out our AI-powered discussion platform. Part of our goal for these user tests is for you to interact with and experience novel social media features involving discussions to help us get a sense of their usability. Your tasks:
+                            We're excited for you to try out our AI-in-the-loop discussion platform. Part of our goal for this user test is for you to interact with new social media features involving <b>controversial</b> discussions to help us get a sense of their usability. Your tasks:
                             <ol className="p-4">
                                 <li>1. Specify your content preferences</li>
                                 <li>2. Respond to a post on your home feed</li>
                                 <li>3. Engage with an AI-powered chatbot</li>
                             </ol> 
-                            <b>Note that many features will be unavailable/unclickable</b>
+                            <b>Note that some features will be unavailable/unclickable</b>
                         </div>
                     ) : (header_text[phase].subheader)}
                 </h2>
             </div>
             {
                 phase === PHASE.INTRO_PHASE ? (
-                    <div className="flex flex-col gap-y-4 w-full h-full justify-center items-center">
-                        <Image
-                            src='/images/minimal_y_logo.png'
-                            width={200}
-                            height={200}
-                            alt="Y Logo"
-                            className=""
-                        />
-                    </div>
+                    <div className="h-full"></div>
                 ) : phase === PHASE.PROFILE_PHASE ? (
                     <ProfilePhase />
                 ) : (
                     <RatingPhase handleRatingsUpdate={handleRatingsUpdate} ratings={ratings} />
                 )
             }
-            <div className="w-full flex">
+            <div className="w-full flex justify-between p-8">
                 <button
                     onClick={handlePrevClick}
                     disabled={phase === PHASE.INTRO_PHASE}
-                    className="bg-cream disabled:cursor-not-allowed font-semibold disabled:hover:border-black disabled:hover:bg-cream disabled:hover:text-black disabled:opacity-25 text-lg cursor-pointer w-full py-16 border-t border-black hover:bg-blood-orange hover:border-blood-orange hover:text-cream transition-all ease-in-out duration-200 border-x"
+                    className="bg-cream disabled:cursor-not-allowed font-semibold disabled:hover:border-black rounded-lg disabled:hover:bg-cream disabled:hover:text-black disabled:opacity-25 text-lg cursor-pointer px-8 py-4 border border-black hover:bg-blood-orange hover:border-blood-orange hover:text-cream transition-all ease-in-out duration-200 border-x"
                 >
                     Prev
                 </button>
                 <button
                     onClick={handleNextClick}
                     disabled={phase === PHASE.RATING_PHASE && ratings.indexOf(-1) !== -1}
-                    className="bg-cream disabled:cursor-not-allowed font-semibold disabled:hover:border-black disabled:hover:bg-cream disabled:hover:text-black disabled:opacity-25 text-lg cursor-pointer w-full py-16 border-t border-r border-black hover:bg-blood-orange hover:border-blood-orange hover:text-cream transition-all ease-in-out duration-200"
+                    className="bg-cream disabled:cursor-not-allowed font-semibold disabled:hover:border-black rounded-lg disabled:hover:bg-cream disabled:hover:text-black disabled:opacity-25 text-lg cursor-pointer px-8 py-4 border border-black hover:bg-blood-orange hover:border-blood-orange hover:text-cream transition-all ease-in-out duration-200"
                 >
                     {phase === PHASE.RATING_PHASE ? "Finish" : "Next"}
                 </button>

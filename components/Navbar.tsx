@@ -91,7 +91,7 @@ function NavItem({
 }) {
     return (
         <div
-            className={`w-full flex p-4 justify-center items-center border-b border-black cursor-not-allowed transition-colors duration-200 ease-in-out
+            className={`w-full flex p-4 justify-center items-center border-b border-black cursor-not-allowed transition-colors duration-200 ease-in-out opacity-50
                 ${active ? 'text-blood-orange' : 'text-black'}`}
         >
             {children}
