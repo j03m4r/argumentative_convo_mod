@@ -13,7 +13,7 @@ const opinions = [
     "Trump and the US are fascist",
     "Islam is wrong",
     "Being gay is wrong",
-    "Feminism is misandry"
+    "Feminism is anti-male"
 ]
 
 const RatingPhase: FC<RatingsPhaseProps> = ({ handleRatingsUpdate, ratings }) => {
