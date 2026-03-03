@@ -98,7 +98,6 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
     const initializeChat = async () => {
         if (!initialSystemPrompt || !post) return;
 
-        console.log('initializeChat called');
         setIsLoading(true);
         try {
             const systemMessage: Message = {

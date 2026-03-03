@@ -81,7 +81,6 @@ export default function Navbar() {
     )
 }
 
-// NavItem component with hover effect
 function NavItem({ 
     active, 
     children 
