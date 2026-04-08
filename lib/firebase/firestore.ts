@@ -18,6 +18,7 @@ export async function setUserArgumentationType(userId: string, argumentationType
     await setDoc(docRef, {
         argumentationType: argumentationType,
         updatedAt: Timestamp.now(),
+        createdAt: Timestamp.now(),
     });
 }
 
