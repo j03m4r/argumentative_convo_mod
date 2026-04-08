@@ -93,10 +93,10 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                                 setPrompt(eristic_prompt);
                                 _prompt = eristic_prompt;
                                 break;
-                            case "discovery":
-                                setPrompt(discovery_prompt);
-                                _prompt = discovery_prompt;
-                                break;
+                            // case "discovery":
+                            //     setPrompt(discovery_prompt);
+                            //     _prompt = discovery_prompt;
+                            //     break;
                             default:
                                 setPrompt("control");
                                 _prompt = "control";

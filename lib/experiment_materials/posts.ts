@@ -63,9 +63,18 @@ export const posts: Post[] = [
         },
         timestamp: "5h"
     },
+    // {
+    //     title: "Being is gay is wrong",
+    //     content: "While Christ doesn't explicitly address it in the New Testament, God does condemn it in the Old Testament, which suggests consistency across the Trinity - God, Christ, and the Holy Spirit. I think an important theological distinction should be made clear between orientation and behavior. According to God's view, experiencing same-sex attraction isn't inherently sinful. Rather, acting on those attractions is what conflicts with biblical standards. This distinction mirrors how many other faith traditions differentiate between temptation and action, recognizing the complexity of human experience while maintaining doctrinal principles.",
+    //     user: {
+    //         name: "KneelRock7876",
+    //         pfp_src: "/images/cool_tie_pfp.jpg"
+    //     },
+    //     timestamp: "5h"
+    // },
     {
-        title: "Being is gay is wrong",
-        content: "While Christ doesn't explicitly address it in the New Testament, God does condemn it in the Old Testament, which suggests consistency across the Trinity - God, Christ, and the Holy Spirit. I think an important theological distinction should be made clear between orientation and behavior. According to God's view, experiencing same-sex attraction isn't inherently sinful. Rather, acting on those attractions is what conflicts with biblical standards. This distinction mirrors how many other faith traditions differentiate between temptation and action, recognizing the complexity of human experience while maintaining doctrinal principles.",
+        title: "A theological perspective on same-sex attraction",
+        content: "While the New Testament doesn't record Jesus directly addressing this topic, some passages in the Old Testament have led many Christians to distinguish between orientation and behavior. From this theological framework, experiencing same-sex attraction isn't viewed as sinful in itself — it's the acting on it that is sinful according to biblical teaching. This mirrors how many faith traditions broadly handle the relationship between temptation and action.",
         user: {
             name: "KneelRock7876",
             pfp_src: "/images/cool_tie_pfp.jpg"

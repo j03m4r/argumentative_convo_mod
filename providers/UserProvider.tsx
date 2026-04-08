@@ -1,8 +1,10 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getAuth, signInAnonymously, onAuthStateChanged, User } from 'firebase/auth';
+import { getAuth, signInAnonymously, onAuthStateChanged, User, UserCredential } from 'firebase/auth';
 import { app } from '@/lib/firebase/firebase';
+import { setUserArgumentationType } from '@/lib/firebase/firestore';
+import { useSearchParams } from 'next/navigation';
 
 interface UserContextType {
     user: User | null;
@@ -19,14 +21,25 @@ const UserContext = createContext<UserContextType>({
 export function UserProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const searchParams = useSearchParams();
 
     useEffect(() => {
         const auth = getAuth(app);
+        let creds: UserCredential | null = null;
 
         // Sign in anonymously if no user and wait 5 seconds if there is a user
         const initAuth = async () => {
             if (!auth.currentUser) {
-                await signInAnonymously(auth);
+                creds = await signInAnonymously(auth);
+                if (creds) {
+                    const id = creds.user.uid;
+                    const urlArgumentationType = searchParams.get('cond');
+                    if (urlArgumentationType) {
+                        await setUserArgumentationType(id, urlArgumentationType);
+                    } else {
+                        await setUserArgumentationType(id, 'control');
+                    }
+                }
             }
             setIsLoading(false);
         };

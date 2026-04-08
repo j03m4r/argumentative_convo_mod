@@ -12,6 +12,15 @@ function shuffleArray(array: any) {
     return array;
 }
 
+export async function setUserArgumentationType(userId: string, argumentationType: string) {
+    const docRef = doc(db, 'users', userId);
+
+    await setDoc(docRef, {
+        argumentationType: argumentationType,
+        updatedAt: Timestamp.now(),
+    });
+}
+
 export async function checkUserHasRatings(userId: string): Promise<boolean> {
     try {
         const userDoc = await getDoc(doc(db, 'users', userId));
@@ -48,11 +57,11 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
     let _posts = ["ai", "vaccine", "disagree"];
     _posts = shuffleArray(_posts);
 
-    const argumentation_types = ["control", "persuasion", "negotiation", "deliberation", "inquiry", "information_seeking", "eristic", "discovery"];
-    const randArgumentationIdx = Math.floor(Math.random() * argumentation_types.length);
-    const argumentationType = argumentation_types[randArgumentationIdx];
+    // const argumentation_types = ["control", "persuasion", "negotiation", "deliberation", "inquiry", "information_seeking", "eristic", "discovery"];
+    // const randArgumentationIdx = Math.floor(Math.random() * argumentation_types.length);
+    // const argumentationType = argumentation_types[randArgumentationIdx];
 
-    await setDoc(docRef, {
+    await updateDoc(docRef, {
         hasCompletedInitialRatings: true,
         initialRatings: ratings,
         disagreePostIdx: disagreePostIdx,
@@ -65,7 +74,6 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
         conversation: [],
         finishedModeration: false,
         hasUpvoted: null,
-        argumentationType: argumentationType,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
     });
@@ -83,7 +91,7 @@ export async function updateInitialResponse(userId: string, response: string) {
 export async function updateRevisedResponse(userId: string, response: string) {
     const docRef = doc(db, 'users', userId);
 
-await updateDoc(docRef, {
+    await updateDoc(docRef, {
         revisedResponse: response,
         updatedAt: Timestamp.now(),
     });
