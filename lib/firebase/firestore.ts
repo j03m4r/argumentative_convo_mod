@@ -14,6 +14,9 @@ function shuffleArray(array: any) {
 
 export async function setUserArgumentationType(userId: string, argumentationType: string) {
     const docRef = doc(db, 'users', userId);
+    const existing = await getDoc(docRef);
+
+    if (existing.exists()) return;
 
     await setDoc(docRef, {
         argumentationType: argumentationType,
