@@ -198,7 +198,8 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                     setTimeout(function() {
                         setIsLoadingModeration(false);
                         setFinishedModeration(true);
-                    }, 20000);
+                        setModalIsOpen(true);
+                    }, 5000);
                 } else {
                     setTimeout(function() {
                         setIsModeration(true);
@@ -255,7 +256,16 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                     </div>
                     <div className='z-50 absolute blur-none opacity-100 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-cream p-16 rounded-xl shadow-xl border text-xl'>
                         <svg onClick={() => setModalIsOpen(false)} xmlns="http://www.w3.org/2000/svg" width={24} className='fill-black hover:fill-blood-orange cursor-pointer absolute right-4 top-4 transition-colors duration-200 ease-in-out' viewBox="0 0 640 640"><path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z"/></svg>
-                        Now that you have finished conversing with our AI chatbot, you are free to close this textbox and <b className='text-blood-orange'>finish responding to the post.</b>
+                        {prompt === "control" ? (
+                            <div className='flex flex-col gap-y-1'>
+                                <h1 className="text-xl font-bold text-blood-orange">
+                                    Hold on...
+                                </h1>
+                                <div className='text-lg'>Are you sure you want to post this? Reconsider and <b>finish responding to the post.</b></div>
+                            </div>
+                        ) : (
+                            <div>Now that you have finished conversing with our AI chatbot, you are free to close this textbox and <b className='text-blood-orange'>finish responding to the post.</b>"</div>
+                        )}
                     </div>
                 </>
             )}

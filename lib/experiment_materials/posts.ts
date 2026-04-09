@@ -8,10 +8,112 @@ export type Post = {
     timestamp: string;
 };
 
+// export const posts: Post[] = [
+//     {
+//         title: "An abortion should require the consent of the father",
+//         content: "Provided there is no threat to the mother's life or health and the baby was conceived through consensual sex, if a woman opts to terminate the pregnancy, she should REQUIRE the consent of the father. The reality is the father's child too. I don't get why this is even controversial - the father should be prepared to raise the child alone if the mother won't. But it is still the father's child!! Men's rights are constantly ignored in this debate and he should have a say in its life. Women get all the fucking power and men get none, I hate it.",
+//         user: {
+//             name: "KneelRock7876",
+//             pfp_src: "/images/cool_tie_pfp.jpg"
+//         },
+//         timestamp: "5h"
+//     },
+//     {
+//         title: "Men should not have vaginal sex women if they can't handle women having control over whether they give birth or not.",
+//         content: "To be honest, I think this is more about men not being able to stand women having more decision making authority than them. But in any case, every pregnancy inherently carries health risks for women. For instance, my experience with gestational diabetes twice has left me pre-diabetic. Additionally, I required a c-section when my first child was breech—major surgery with significant medical risks. This creates a fundamental asymmetry: women bear ALL the physical risk of pregnancy, while men don't face any health consequences. Given that pregnancy embeds these risks exclusively in women's bodies, it seems reasonable that women should retain decision-making authority regarding abortion. I recognize this perspective may be controversial, but I think it's worth considering how the unequal distribution of biological risk should inform our thinking about reproductive decisions.",
+//         user: {
+//             name: "KneelRock7876",
+//             pfp_src: "/images/cool_tie_pfp.jpg"
+//         },
+//         timestamp: "5h"
+//     },
+//     {
+//         title: "Honestly Trump is a Fascist.",
+//         content: "Honestly, I don't know how anyone could vote for him, he is literally a fascist who wants to end democracy in the, formally, United States of America. I'm particularly worried about his immigration enforcement proposals, which seem excessively aggressive to me. It's like he's using his Gestapo to round up all the undocumented patriots. No one is illegal except for Trump. Ugh, it just makes me so mad because the right seems to not understand this point of view at all.",
+//         user: {
+//             name: "KneelRock7876",
+//             pfp_src: "/images/cool_tie_pfp.jpg"
+//         },
+//         timestamp: "5h"
+//     },
+//     {
+//         title: 'No sweetheart....the USA is not "Fascist"',
+//         content: `It's honestly fucking hilarious to watch these TikTokers and 20-year-old community college students lounging on their couches with their $1000 phones, acting like they're leading some heroic battle against "fascism." Take a seat, cupcake. You wouldn't last a single day in a real fascist regime. If you spent less time rotting your brain on social media and actually lived a little, you might be capable of critical thought, you idiots. The idea that America is somehow fighting against actual, freedom-crushing fascism is not only insane, it's laughable. Time to GROW up.`,
+//         user: {
+//             name: "KneelRock7876",
+//             pfp_src: "/images/cool_tie_pfp.jpg"
+//         },
+//         timestamp: "5h"
+//     },
+//     {
+//         title: 'I don\'t like religion, but especially Islam. Is there anything worse?',
+//         content: "I struggle to understand how some interpretations of Islam align with modern values, especially regarding women's rights. Why would any woman in the 21st Century support a religion that brutalizes, imprisons, disenfranchises, and denies freedoms to more than 50% of the populace? To me, this is absurd. I seriously wonder why more women in the 21st century would embrace religious frameworks that seem to limit their autonomy and opportunities. Additionally, where are the moderate and progressive Muslim males, and why aren't they defending their women, their sisters, mothers, daughters?",
+//         user: {
+//             name: "KneelRock7876",
+//             pfp_src: "/images/cool_tie_pfp.jpg"
+//         },
+//         timestamp: "5h"
+//     },
+//     {
+//         title: "Islam is the best Religion, and I can prove it!!!!",
+//         content: "islam is a preserved religion. The Quran was mass memorised - it is the same word by word. Hundreds of thousands (or even millions) of hadith (sayings of our Prophet) exist, with thousands authenticated. Islamic sciences (fiqh, aqidah, tassawuf) are well developed. Other idiot religions can't even keep their texts straight. our Prophet Hazrat Muhammad S.A.W. is the last Prophet (but we believe in Jesus too). If a Christian accepts jesus and his goons as prophets, then why not Prophet Muhammad, leader of a much larger Ummah (as far as I am aware)? Why stop at Jesus (Isa A.S.)? Christians are just being stubborn and illogical at this point. Thirdly, as far as I aware, Muslims are much more practising (and have much more originality) than other religions, and still have massive amounts of followers. Christianity is dying out anyway.",
+//         user: {
+//             name: "KneelRock7876",
+//             pfp_src: "/images/cool_tie_pfp.jpg"
+//         },
+//         timestamp: "5h"
+//     },
+//     // {
+//     //     title: "Being is gay is wrong",
+//     //     content: "While Christ doesn't explicitly address it in the New Testament, God does condemn it in the Old Testament, which suggests consistency across the Trinity - God, Christ, and the Holy Spirit. I think an important theological distinction should be made clear between orientation and behavior. According to God's view, experiencing same-sex attraction isn't inherently sinful. Rather, acting on those attractions is what conflicts with biblical standards. This distinction mirrors how many other faith traditions differentiate between temptation and action, recognizing the complexity of human experience while maintaining doctrinal principles.",
+//     //     user: {
+//     //         name: "KneelRock7876",
+//     //         pfp_src: "/images/cool_tie_pfp.jpg"
+//     //     },
+//     //     timestamp: "5h"
+//     // },
+//     {
+//         title: "According to God being gay is wrong",
+//         content: "While the New Testament doesn't record Jesus directly addressing this topic, some passages in the Old Testament have led many Christians to distinguish between orientation and behavior. From this theological framework, experiencing same-sex attraction isn't viewed as sinful in itself — it's the acting on it that is sinful according to biblical teaching. This mirrors how many faith traditions broadly handle the relationship between temptation and action.",
+//         user: {
+//             name: "KneelRock7876",
+//             pfp_src: "/images/cool_tie_pfp.jpg"
+//         },
+//         timestamp: "5h"
+//     },
+//     {
+//         title: "I'm really sick of straight people.",
+//         content: "I haven't been out long, less then a year now. I don't have any gay friends ( I know some people and coworkers but I wouldn't consider them friends) and i don't really know the gay crowd here where I live and covid kind of ruined my chancesof getting out there this year 😂. All of my friends are straight and I love them but I'm really tired of hanging around with straight people all the time. Is that a bad thing to say?",
+//         user: {
+//             name: "KneelRock7876",
+//             pfp_src: "/images/cool_tie_pfp.jpg"
+//         },
+//         timestamp: "5h"
+//     },
+//     {
+//         title: "Feminism IS misandry.",
+//         content: "I think it's worth examining the name itself. From what I observe, It focuses purely on females wants and needs rather than pursuing gender equality for all. In my view, it pushes women up on their pedestals, telling them the lie that they are better than men. That they deserve better than men. Additionally, they actively put down men to make themselves feel better too.",
+//         user: {
+//             name: "KneelRock7876",
+//             pfp_src: "/images/cool_tie_pfp.jpg"
+//         },
+//         timestamp: "5h"
+//     },
+//     {
+//         title: "Feminism isn't misandry.",
+//         content: `Feminism is an ideology and movement that tries to achieve gender-equality. Feminism is not anti-men because it has "fem" in it, it has "fem" in it because they are giving back what women were denied of. You are literally not able to misandric by all definitions while also being feminist.`,
+//         user: {
+//             name: "KneelRock7876",
+//             pfp_src: "/images/cool_tie_pfp.jpg"
+//         },
+//         timestamp: "5h"
+//     }
+// ];
+
 export const posts: Post[] = [
     {
         title: "An abortion should require the consent of the father",
-        content: "Provided there is no threat to the mother's life or health and the baby was conceived through consensual sex, if a woman opts to terminate the pregnancy, she should REQUIRE the consent of the father. The reality is the father's child too. I don't get why this is even controversial - the father should be prepared to raise the child alone if the mother won't. But it is still the father's child!! Men's rights are constantly ignored in this debate and he should have a say in its life. Women get all the fucking power and men get none, I hate it.",
+        content: "Provided there is no threat to the mother's life or health and the baby was conceived through consensual sex, a woman opting to terminate the pregnancy should REQUIRE the consent of the father. It is the father's child too. I don't get why this is controversial - he should be prepared to raise the child alone if the mother won't. But it is still the father's child!! Men's rights are constantly ignored in this debate. Women get all the power and men get none, I hate it.",
         user: {
             name: "KneelRock7876",
             pfp_src: "/images/cool_tie_pfp.jpg"
@@ -19,8 +121,8 @@ export const posts: Post[] = [
         timestamp: "5h"
     },
     {
-        title: "Men should not have vaginal sex women if they can't handle women having control over whether they give birth or not.",
-        content: "To be honest, I think this is more about men not being able to stand women having more decision making authority than them. But in any case, every pregnancy inherently carries health risks for women. For instance, my experience with gestational diabetes twice has left me pre-diabetic. Additionally, I required a c-section when my first child was breech—major surgery with significant medical risks. This creates a fundamental asymmetry: women bear ALL the physical risk of pregnancy, while men don't face any health consequences. Given that pregnancy embeds these risks exclusively in women's bodies, it seems reasonable that women should retain decision-making authority regarding abortion. I recognize this perspective may be controversial, but I think it's worth considering how the unequal distribution of biological risk should inform our thinking about reproductive decisions.",
+        title: "Men should not have vaginal sex women if they can't handle women having control over whether they give birth or not",
+        content: "Pregnancy is a physical process. It takes place in a woman's body. Gestational diabetes is one complication. Pre-diabetes is a long term outcome. C-sections are abdominal surgeries. Recovery takes weeks. These are the physical realities of childbirth. Men do not undergo them. The body in question belongs to the woman. Her body carries the pregnancy to term. She experiences the medical outcomes. He does not.",
         user: {
             name: "KneelRock7876",
             pfp_src: "/images/cool_tie_pfp.jpg"
@@ -28,8 +130,8 @@ export const posts: Post[] = [
         timestamp: "5h"
     },
     {
-        title: "Honestly Trump is a Fascist.",
-        content: "Honestly, I don't know how anyone could vote for him, he is literally a fascist who wants to end democracy in the, formally, United States of America. I'm particularly worried about his immigration enforcement proposals, which seem excessively aggressive to me. It's like he's using his Gestapo to round up all the undocumented patriots. No one is illegal except for Trump. Ugh, it just makes me so mad because the right seems to not understand this point of view at all.",
+        title: "Honestly Trump is a Fascist",
+        content: "Honestly, I find it difficult to understand how anyone could vote for him, given that he is someone who, in my view, threatens democratic norms in the United States. I'm particularly worried about his immigration enforcement proposals, which seem excessively aggressive to me. It is as though enforcement mechanisms are being deployed against undocumented people indiscriminately. Because the right seems unwilling to consider this perspective, I think it's worth stating clearly.",
         user: {
             name: "KneelRock7876",
             pfp_src: "/images/cool_tie_pfp.jpg"
@@ -38,7 +140,7 @@ export const posts: Post[] = [
     },
     {
         title: 'No sweetheart....the USA is not "Fascist"',
-        content: `It's honestly fucking hilarious to watch these TikTokers and 20-year-old community college students lounging on their couches with their $1000 phones, acting like they're leading some heroic battle against "fascism." Take a seat, cupcake. You wouldn't last a single day in a real fascist regime. If you spent less time rotting your brain on social media and actually lived a little, you might be capable of critical thought, you idiots. The idea that America is somehow fighting against actual, freedom-crushing fascism is not only insane, it's laughable. Time to GROW up.`,
+        content: `It's honestly insane to watch people on social media acting as though they are leading some heroic battle against fascism, given that they live in a country where dissent is still legal. You wouldn't last a single day in a real fascist regime. If you spent less time on social media and actually considered what fascism historically entailed, you might reach a more nuanced view. The idea that America is fighting freedom-crushing fascism is not only historically inaccurate — it is, in my view, counterproductive to identifying actual threats to democracy. Furthermore, by conflating discomfort with oppression, we undermine the credibility of those arguments when it actually matters. Those who have lived under genuine authoritarian rule would recognise the difference immediately.`,
         user: {
             name: "KneelRock7876",
             pfp_src: "/images/cool_tie_pfp.jpg"
@@ -56,25 +158,7 @@ export const posts: Post[] = [
     },
     {
         title: "Islam is the best Religion, and I can prove it!!!!",
-        content: "islam is a preserved religion. The Quran was mass memorised - it is the same word by word. Hundreds of thousands (or even millions) of hadith (sayings of our Prophet) exist, with thousands authenticated. Islamic sciences (fiqh, aqidah, tassawuf) are well developed. Other idiot religions can't even keep their texts straight. our Prophet Hazrat Muhammad S.A.W. is the last Prophet (but we believe in Jesus too). If a Christian accepts jesus and his goons as prophets, then why not Prophet Muhammad, leader of a much larger Ummah (as far as I am aware)? Why stop at Jesus (Isa A.S.)? Christians are just being stubborn and illogical at this point. Thirdly, as far as I aware, Muslims are much more practising (and have much more originality) than other religions, and still have massive amounts of followers. Christianity is dying out anyway.",
-        user: {
-            name: "KneelRock7876",
-            pfp_src: "/images/cool_tie_pfp.jpg"
-        },
-        timestamp: "5h"
-    },
-    // {
-    //     title: "Being is gay is wrong",
-    //     content: "While Christ doesn't explicitly address it in the New Testament, God does condemn it in the Old Testament, which suggests consistency across the Trinity - God, Christ, and the Holy Spirit. I think an important theological distinction should be made clear between orientation and behavior. According to God's view, experiencing same-sex attraction isn't inherently sinful. Rather, acting on those attractions is what conflicts with biblical standards. This distinction mirrors how many other faith traditions differentiate between temptation and action, recognizing the complexity of human experience while maintaining doctrinal principles.",
-    //     user: {
-    //         name: "KneelRock7876",
-    //         pfp_src: "/images/cool_tie_pfp.jpg"
-    //     },
-    //     timestamp: "5h"
-    // },
-    {
-        title: "A theological perspective on same-sex attraction",
-        content: "While the New Testament doesn't record Jesus directly addressing this topic, some passages in the Old Testament have led many Christians to distinguish between orientation and behavior. From this theological framework, experiencing same-sex attraction isn't viewed as sinful in itself — it's the acting on it that is sinful according to biblical teaching. This mirrors how many faith traditions broadly handle the relationship between temptation and action.",
+        content: "Islam is a preserved religion, and this is demonstrable. Because the Quran was mass memorised word for word, it has remained consistent in a way that other idiot religions have not. Furthermore, hundreds of thousands of authenticated hadith exist, since Islamic scholarly tradition developed rigorous verification processes. Islamic sciences such as fiqh, aqidah, and tassawuf are well developed as a result. Our Prophet Hazrat Muhammad S.A.W. is the last Prophet, though we also believe in Jesus. If a Christian accepts Jesus and his goons as prophets, then it follows that they should consider why they would exclude Prophet Muhammad, given that he leads a much larger Ummah. Why stop at Jesus (Isa A.S.)? Christians are simply being stubborn at this point. Moreover, Muslims are much more practising than followers of other religions, and Christianity is dying out anyway.",
         user: {
             name: "KneelRock7876",
             pfp_src: "/images/cool_tie_pfp.jpg"
@@ -82,7 +166,16 @@ export const posts: Post[] = [
         timestamp: "5h"
     },
     {
-        title: "I'm really sick of straight people.",
+        title: "Acting on being gay is wrong !",
+        content: "While the New Testament doesn't necessarily record Jesus directly addressing this topic, some passages in the Old Testament have led many Christians to distinguish between orientation and behavior, since the two are theologically treated as separate things. From this framework, being gay isn't necessarily viewed as sinful in itself — rather, it is the acting on it that is wrong according to biblical teaching. And this mirrors how many faith traditions broadly handle the relationship between temptation and action so I don't know why people get so upset about it",
+        user: {
+            name: "KneelRock7876",
+            pfp_src: "/images/cool_tie_pfp.jpg"
+        },
+        timestamp: "5h"
+    },
+    {
+        title: "I'm really sick of straight people",
         content: "I haven't been out long, less then a year now. I don't have any gay friends ( I know some people and coworkers but I wouldn't consider them friends) and i don't really know the gay crowd here where I live and covid kind of ruined my chancesof getting out there this year 😂. All of my friends are straight and I love them but I'm really tired of hanging around with straight people all the time. Is that a bad thing to say?",
         user: {
             name: "KneelRock7876",
@@ -91,8 +184,8 @@ export const posts: Post[] = [
         timestamp: "5h"
     },
     {
-        title: "Feminism IS misandry.",
-        content: "I think it's worth examining the name itself. From what I observe, It focuses purely on females wants and needs rather than pursuing gender equality for all. In my view, it pushes women up on their pedestals, telling them the lie that they are better than men. That they deserve better than men. Additionally, they actively put down men to make themselves feel better too.",
+        title: "Feminism IS anti-male",
+        content: "The name itself centers women. It focuses on females rather than all genders. It pushes women above men. Men get put down. That's not equality.",
         user: {
             name: "KneelRock7876",
             pfp_src: "/images/cool_tie_pfp.jpg"
@@ -100,8 +193,8 @@ export const posts: Post[] = [
         timestamp: "5h"
     },
     {
-        title: "Feminism isn't misandry.",
-        content: `Feminism is an ideology and movement that tries to achieve gender-equality. Feminism is not anti-men because it has "fem" in it, it has "fem" in it because they are giving back what women were denied of. You are literally not able to misandric by all definitions while also being feminist.`,
+        title: "Feminism isn't anti-male",
+        content: `Feminism is an ideology that tries to achieve gender-equality. Because it has 'fem' in it, some assume it is anti-men, but this reasoning misunderstands why the word exists — specifically, it reflects that women were historically denied rights that men were not. Furthermore, if one considers what misandry actually means, it becomes clear that you are literally not able to be misandric while also advocating for equality by definition. The two positions are logically incompatible.`,
         user: {
             name: "KneelRock7876",
             pfp_src: "/images/cool_tie_pfp.jpg"
