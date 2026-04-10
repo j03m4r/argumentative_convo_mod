@@ -1,11 +1,11 @@
 "use client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import ProfilePhase from "./components/ProfilePhase";
 import RatingPhase from "./components/RatingPhase";
-import { submitInitialRatings } from "@/lib/firebase/firestore";
+import { submitInitialRatings, getUserData } from "@/lib/firebase/firestore";
 import { useUser } from "@/providers/UserProvider";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
+import { OrbitProgress } from "react-loading-indicators";
 
 enum PHASE {
     INTRO_PHASE = 0,
@@ -31,8 +31,11 @@ const header_text = [
 export default function SetupPage() {
     const [phase, setPhase] = useState<PHASE>(PHASE.INTRO_PHASE);
     const [ratings, setRatings] = useState<number[]>([-1, -1, -1, -1, -1]);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [condition, setCondition] = useState(null)
     const user = useUser();
     const router = useRouter();
+    const { userId } = useUser();
 
     const handlePrevClick = () => {
         if (phase !== PHASE.INTRO_PHASE) {
@@ -57,6 +60,36 @@ export default function SetupPage() {
         setRatings(_ratings);
     }
 
+    useEffect(() => {
+        const loadSavedConversation = async () => {
+            if (!userId) {
+                setIsLoading(true);
+                return;
+            }
+
+            try {
+                const userData = await getUserData(userId);
+                if (userData) {
+                    setCondition(userData.argumentationType)
+                }
+            } catch (error) {
+                console.error('Error loading user:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadSavedConversation();
+    }, [userId]);
+
+    if (isLoading) {
+        return (
+            <div className="flex h-screen w-full justify-center items-center">
+                <OrbitProgress color="#ff3f34" size="medium" text="" textColor="" />
+            </div>
+        );
+    }
+
     return (
         <main className="flex flex-col w-full h-screen">
             <div className="flex flex-col gap-y-4 pt-8 px-16">
@@ -70,7 +103,9 @@ export default function SetupPage() {
                             <ol className="p-4">
                                 <li>1. Specify your content preferences</li>
                                 <li>2. Respond to a post on your home feed</li>
-                                <li>3. Engage with an AI-powered chatbot</li>
+                                {condition != "control"&&(
+                                    <li>3. Engage with an AI-powered chatbot</li>
+                                )}
                             </ol> 
                             <b>Note that some features will be unavailable/unclickable</b>
                         </div>

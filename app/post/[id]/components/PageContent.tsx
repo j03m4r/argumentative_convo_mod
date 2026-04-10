@@ -2,7 +2,7 @@
 import type { FC } from 'react';
 import ChatInterface from "./ChatInterface";
 import { Post } from "@/lib/experiment_materials/posts";
-import { deliberation_prompt, discovery_prompt, eristic_prompt, information_seeking_prompt, inquiry_prompt, negotiation_prompt, persuasion_prompt } from "@/lib/experiment_materials/prompts";
+import { deliberation_prompt, eristic_prompt, information_seeking_prompt, inquiry_prompt, negotiation_prompt, persuasion_prompt } from "@/lib/experiment_materials/prompts";
 import { updateInitialResponse, getUserData, updateFinishedModerationStatus, updateRevisedResponse, updateUpVoteStatus, addConversationMessages, updateComment } from "@/lib/firebase/firestore";
 import { useState, useEffect } from "react";
 import { useUser } from "@/providers/UserProvider";
