@@ -371,8 +371,8 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                                         <div className="flex flex-col w-full gap-y-1">
                                             <div className="flex w-full flex-col">
                                                 <div className="flex w-full gap-x-1 items-center">
-                                                    <h2 className="cursor-not-allowed text-blood-orange text-sm">5121329495</h2>
-                                                    <h2 className="text-sm ml-1 font-light">@5121329495</h2>
+                                                    <h2 className="cursor-not-allowed text-blood-orange text-sm">FogMessier63</h2>
+                                                    <h2 className="text-sm ml-1 font-light">@FogMessier63</h2>
                                                     <p className='font-light'>•</p>
                                                     <p className='text-sm font-light'>Now</p>
                                                 </div>
