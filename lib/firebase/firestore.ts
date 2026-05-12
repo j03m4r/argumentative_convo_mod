@@ -39,6 +39,8 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
     const docRef = doc(db, 'users', userId);
     const polarizedPosts: number[] = [];
     let disagreePostIdx = -1;
+    const usedAux = new Set();
+    const usedOpinionIdxs = new Set();
 
     for (let i = 0; i < ratings.length; i++) {
         const rating = ratings[i];
@@ -54,33 +56,160 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
         } else {
             disagreePostIdx = (disagreePostIdx*2) + 1
         }
+    } else {
+        disagreePostIdx = Math.floor(Math.random() * ratings.length);
+        disagreePostIdx = disagreePostIdx*2 + (ratings[disagreePostIdx] <= 2 ? 0 : 1);
     }
 
-    const auxPostIdx1 = Math.floor(Math.random() * 4); 
-    const auxPostIdx2 = Math.floor(Math.random() * 4); 
-    let _posts = ["ai", "vaccine", "disagree"];
-    _posts = shuffleArray(_posts);
+    usedOpinionIdxs.add(disagreePostIdx);
+
+    // const auxPostIdx1 = Math.floor(Math.random() * 4);
+    // const auxPostIdx2 = Math.floor(Math.random() * 4);
+    // let _posts = ["ai", "vaccine", "disagree"];
+    // _posts = shuffleArray(_posts);
 
     // const argumentation_types = ["control", "persuasion", "negotiation", "deliberation", "inquiry", "information_seeking", "eristic", "discovery"];
     // const randArgumentationIdx = Math.floor(Math.random() * argumentation_types.length);
     // const argumentationType = argumentation_types[randArgumentationIdx];
 
+    let disagreePage = [];
+    let randAuxPostIdx = Math.floor(Math.random() * 4)*2;
+    usedAux.add(randAuxPostIdx);
+    disagreePage.push({ "type": "aux", "idx": randAuxPostIdx });
+
+    let agreePage = [];
+    let respondPage = [];
+    
+    let randOpinionIdx = null;
+    while (disagreePage.length < 3) {
+        randOpinionIdx = Math.floor(Math.random() * ratings.length);
+        if (ratings[randOpinionIdx] <= 2) {
+            randOpinionIdx *= 2;
+        } else {
+            randOpinionIdx = (randOpinionIdx*2) + 1;
+        }
+
+        if (!usedOpinionIdxs.has(randOpinionIdx)) {
+            disagreePage.push({ "type": "opinion", "idx": randOpinionIdx });
+            usedOpinionIdxs.add(randOpinionIdx);
+        }
+    }
+
+    randAuxPostIdx = Math.floor(Math.random() * 4)*2;
+    while (usedAux.has(randAuxPostIdx)) {
+        randAuxPostIdx = Math.floor(Math.random() * 4)*2;
+    }
+    usedAux.add(randAuxPostIdx);
+    agreePage.push({ "type": "aux", "idx": randAuxPostIdx });
+    
+    while (agreePage.length < 3) {
+        randOpinionIdx = Math.floor(Math.random() * ratings.length);
+        if (ratings[randOpinionIdx] <= 2) {
+            randOpinionIdx = (randOpinionIdx*2) + 1;
+        } else {
+            randOpinionIdx *= 2;
+        }
+
+        if (!usedOpinionIdxs.has(randOpinionIdx)) {
+            agreePage.push({ "type": "opinion", "idx": randOpinionIdx });
+            usedOpinionIdxs.add(randOpinionIdx);
+        }
+    }
+
+    randAuxPostIdx = Math.floor(Math.random() * 4)*2;
+    while (usedAux.has(randAuxPostIdx)) {
+        randAuxPostIdx = Math.floor(Math.random() * 4)*2;
+    }
+    usedAux.add(randAuxPostIdx);
+    respondPage.push({ "type": "aux", "idx": randAuxPostIdx });
+    
+    while (respondPage.length < 2) {
+        randOpinionIdx = Math.floor(Math.random() * ratings.length);
+        randOpinionIdx = (randOpinionIdx*2) + Math.floor(Math.random() * 2);
+
+        if (!usedOpinionIdxs.has(randOpinionIdx)) {
+            respondPage.push({ "type": "opinion", "idx": randOpinionIdx });
+            usedOpinionIdxs.add(randOpinionIdx);
+        }
+    }
+
+    respondPage.push({ "type": "opinion", "idx": disagreePostIdx });
+
+    disagreePage = shuffleArray(disagreePage);
+    agreePage = shuffleArray(agreePage);
+    respondPage = shuffleArray(respondPage);
+
+    const postVotes = new Array(ratings.length*2 + 8).fill(0);
+    const postComments: any = {}
+    for (let i = 0; i < (ratings.length * 2 + 8); i++) {
+        postComments[`${i}`] = []
+    }
+
     await updateDoc(docRef, {
         hasCompletedInitialRatings: true,
         initialRatings: ratings,
         disagreePostIdx: disagreePostIdx,
-        auxPostIdx1: auxPostIdx1,
-        auxPostIdx2: auxPostIdx2,
-        randomPostOrder: _posts,
+        disagreePage: disagreePage,
+        agreePage: agreePage,
+        respondPage: respondPage,
+        postVotes: postVotes,
+        postComments: postComments,
         initialResponse: '',
         revisedResponse: '',
         comment: '',
         conversation: [],
         finishedModeration: false,
         hasUpvoted: null,
+        msToPage2: 30000,
+        msToPage3: 30000,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
     });
+}
+
+export async function updatePostVotes(userId: string, postIdx: number, newVoteVal: number) {
+    const docRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(docRef);
+
+    if (!userDoc.exists()) {
+        console.error('User document does not exist');
+        return;
+    }
+
+    const userData = userDoc.data();
+    const postVotes = userData.postVotes || [];
+    const currentVoteVal = postVotes[postIdx] || 0;
+
+    // If the user is trying to cast the same vote again, we interpret it as a vote removal
+    const updatedVoteVal = currentVoteVal === newVoteVal ? 0 : newVoteVal;
+    postVotes[postIdx] = updatedVoteVal;
+
+    await updateDoc(docRef, {
+        postVotes: postVotes,
+        updatedAt: Timestamp.now(),
+    });
+}
+
+export async function updatePostComments(userId: string, postIdx: number, newComment: string) {
+    const docRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(docRef);
+
+    if (!userDoc.exists()) {
+        console.error('User document does not exist');
+        return;
+    }
+
+    const userData = userDoc.data();
+    const postComments = userData.postComments || [];
+    const currentCommentVal = postComments[`${postIdx}`] || [];
+
+    const updatedCommentVal = [...currentCommentVal, newComment];
+    postComments[`${postIdx}`] = updatedCommentVal;
+
+    await updateDoc(docRef, {
+        postComments: postComments,
+        updatedAt: Timestamp.now(),
+    }); 
 }
 
 export async function updateInitialResponse(userId: string, response: string) {
@@ -106,15 +235,6 @@ export async function updateComment(userId: string, comment: string) {
 
     await updateDoc(docRef, {
         comment: comment,
-        updatedAt: Timestamp.now(),
-    });
-}
-
-export async function updateUpVoteStatus(userId: string, hasUpvoted: boolean|null) {
-    const docRef = doc(db, 'users', userId);
-
-    await updateDoc(docRef, {
-        hasUpvoted: hasUpvoted,
         updatedAt: Timestamp.now(),
     });
 }
@@ -157,4 +277,24 @@ export async function addConversationMessages(userId: string, messages: { role: 
 export async function getUserData(userId: string) {
     const userDoc = await getDoc(doc(db, 'users', userId));
     return userDoc.exists() ? userDoc.data() : null;
+}
+
+export async function setPage2StartedAt(userId: string) {
+    const docRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(docRef);
+    if (userDoc.data()?.page2StartedAt) return; // only set once, ever
+    await updateDoc(docRef, {
+        page2StartedAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+    });
+}
+
+export async function setPage3StartedAt(userId: string) {
+    const docRef = doc(db, 'users', userId);
+    const userDoc = await getDoc(docRef);
+    if (userDoc.data()?.page3StartedAt) return;
+    await updateDoc(docRef, {
+        page3StartedAt: Timestamp.now(),
+        updatedAt: Timestamp.now(),
+    });
 }

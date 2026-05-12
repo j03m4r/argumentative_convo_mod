@@ -6,12 +6,16 @@ export default async function PostPage({
 }: { params: Promise<{ id: string }>}) {
     const { id } = await params;
 
-    const postType = id.split("-")[0]
-    const postIdx = Number(id.split("-")[1])
-    const post = postType==="ai" ? artificial_intelligence_posts[postIdx] : postType==="vaccine" ? vaccine_posts[postIdx] : posts[postIdx]
+    const splitParams = id.split("-")
+    const postType = splitParams[0]
+    const postIdx = Number(splitParams[1])
+    const post = postType==="aux" ? (postIdx >= 4 ? vaccine_posts[postIdx-4] : artificial_intelligence_posts[postIdx]) : posts[postIdx]
+    const upVoteVal = Number(splitParams[2])
+    const downVoteVal = Number(splitParams[3])
+    const commentVal = Number(splitParams[4])
 
     return (
-        <PageContent post={post} />
+        <PageContent post={post} postIdx={postIdx} postType={postType} upVoteVal={upVoteVal} downVoteVal={downVoteVal} commentVal={commentVal} />
     )
 }
 

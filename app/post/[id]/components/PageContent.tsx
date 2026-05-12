@@ -4,7 +4,7 @@ import ChatInterface from "./ChatInterface";
 import ChatMessages from './ChatMessages';
 import { Post } from "@/lib/experiment_materials/posts";
 import { deliberation_prompt, eristic_prompt, information_seeking_prompt, inquiry_prompt, negotiation_prompt, persuasion_prompt } from "@/lib/experiment_materials/prompts";
-import { updateInitialResponse, getUserData, updateFinishedModerationStatus, updateRevisedResponse, updateUpVoteStatus, addConversationMessages, updateComment } from "@/lib/firebase/firestore";
+import { updatePostVotes, updatePostComments, updateInitialResponse, getUserData, updateFinishedModerationStatus, updateRevisedResponse, addConversationMessages, updateComment } from "@/lib/firebase/firestore";
 import { useState, useEffect } from "react";
 import { useUser } from "@/providers/UserProvider";
 import { OrbitProgress } from "react-loading-indicators";
@@ -13,9 +13,15 @@ import ReplyInput from "./ReplyInput";
 import { useRouter } from 'next/navigation';
 import { Tooltip } from 'react-tooltip'
 import { useCallback } from 'react';
+import SkeletonComment from "./SkeletonComment"
 
 interface PageContentProps {
     post: Post;
+    postIdx: number;
+    postType: string;
+    upVoteVal: number;
+    downVoteVal: number;
+    commentVal: number;
 }
 
 interface Message {
@@ -25,7 +31,7 @@ interface Message {
     timestamp: Date;
 }
 
-const PageContent: FC<PageContentProps> = ({ post }) => {
+const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal, downVoteVal, commentVal }) => {
     const [isLoadingModeration, setIsLoadingModeration] = useState(false);
     const [isModeration, setIsModeration] = useState(false);
     const [prompt, setPrompt] = useState<string|null>(null);
@@ -35,12 +41,13 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
     const router = useRouter();
     const [savedMessages, setSavedMessages] = useState<Message[]>([]);
     const [isLoadingMessages, setIsLoadingMessages] = useState(true);
+    const [postVote, setPostVote] = useState(0);
+    const [disagreePostIdx, setDisagreePostIdx] = useState(-1);
 
-    const [upvoteCount, setUpvoteCount] = useState(0);
-    const [downvoteCount, setDownvoteCount] = useState(0);
     const [finishedModeration, setFinishedModeration] = useState(false);
 
     const [comment, setComment] = useState<string>("");
+    const [comments, setComments] = useState<string[]>([])
 
     const [isCopied, setIsCopied] = useState(false);
 
@@ -138,11 +145,11 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                     }
                     setInitialReply(userData.initialResponse || "");
                     setRevisedReply(userData.comment.length > 0 ? "" : (userData.revisedResponse || ""));
-                    if (userData.hasUpvoted) {
-                        setUpvoteCount(1);
-                    } else if (userData.hasUpvoted === false) {
-                        setDownvoteCount(1);
-                    }
+                    setDisagreePostIdx(userData.disagreePostIdx);
+
+                    setPostVote(userData.postVotes[(postType === "aux" ? postIdx+9 : postIdx)])
+                    setComments(userData.postComments[`${(postType === "aux" ? postIdx+9 : postIdx)}`])
+
                     if (userData.comment.length) {
                         setComment(userData.comment);
                     }
@@ -157,58 +164,63 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
         loadSavedConversation();
     }, [userId, post, prompt]);
 
-    const upVote = () => {
-        if (upvoteCount === 1) {
-            setUpvoteCount(0);
-            if (userId) {
-                updateUpVoteStatus(userId, null);
+    const handleVote = (vote: number) => {
+        if (vote === 1) {
+            if (postVote === 1) {
+                setPostVote(0);
+                if (userId) {
+                    updatePostVotes(userId, (postType==="aux" ? postIdx + 9 : postIdx), 0);
+                }
+            } else {
+                setPostVote(1);
+                if (userId) {
+                    updatePostVotes(userId, (postType==="aux" ? postIdx + 9 : postIdx), 1);
+                }
             }
         } else {
-            setUpvoteCount(1);
-            setDownvoteCount(0);
-            if (userId) {
-                updateUpVoteStatus(userId, true);
-            }
-        }
-    }
-
-    const downVote = () => {
-        if (downvoteCount === 1) {
-            setDownvoteCount(0);
-            if (userId) {
-                updateUpVoteStatus(userId, null);
-            }
-        } else {
-            setDownvoteCount(1);
-            setUpvoteCount(0);
-            if (userId) {
-                updateUpVoteStatus(userId, false);
+            if (postVote === -1) {
+                setPostVote(0);
+                if (userId) {
+                    updatePostVotes(userId, (postType==="aux" ? postIdx + 9 : postIdx), 0);
+                }
+            } else {
+                setPostVote(-1);
+                if (userId) {
+                    updatePostVotes(userId, (postType==="aux" ? postIdx + 9 : postIdx), -1);
+                }
             }
         }
     }
 
     const handleReply = (reply: string) => {
         if (userId) {
-            if (finishedModeration) {
-                setComment(reply);
-                updateComment(userId, reply);
-                setRevisedReply("")
-            } else {
-                updateInitialResponse(userId, reply)
-                setInitialReply(reply)
-                setIsLoadingModeration(true);
-                if (prompt === "control") {
-                    setTimeout(function() {
-                        setIsLoadingModeration(false);
-                        setFinishedModeration(true);
-                        setModalIsOpen(true);
-                    }, 5000);
+            if (postIdx===disagreePostIdx) {
+                if (finishedModeration) {
+                    setComment(reply);
+                    updateComment(userId, reply);
+                    setRevisedReply("")
                 } else {
-                    setTimeout(function() {
-                        setIsModeration(true);
-                        setIsLoadingModeration(false);
-                    }, 2000);
+                    updateInitialResponse(userId, reply)
+                    setInitialReply(reply)
+                    setIsLoadingModeration(true);
+                    if (prompt === "control") {
+                        setTimeout(function() {
+                            setIsLoadingModeration(false);
+                            setFinishedModeration(true);
+                            setModalIsOpen(true);
+                        }, 5000);
+                    } else {
+                        setTimeout(function() {
+                            setIsModeration(true);
+                            setIsLoadingModeration(false);
+                        }, 2000);
+                    }
                 }
+            } else {
+                setComments((prev) => [...prev, reply])
+                setRevisedReply("");
+                setInitialReply("");
+                updatePostComments(userId, (postType==="aux" ? postIdx + 9 : postIdx), reply);
             }
         }
     }
@@ -291,7 +303,7 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                                 width={50}
                                 height={50}
                                 alt="Wave profile picture"
-                                className="w-3/4 h-fit rounded-full"
+                                className="w-3/4 h-fit aspect-square! rounded-full"
                             />
                         </div>
                         <div className="flex flex-col w-full gap-y-1">
@@ -310,18 +322,18 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
 
                     <div className='w-full flex justify-center items-center border-t border-black'>
                         <div className='flex items-center justify-center w-full'>
-                            <button onClick={upVote} className={`w-full flex items-center justify-center gap-x-1 border-r border-black px-4 py-2 hover:text-blood-orange cursor-pointer transition-colors duration-200 ease-in-out ${upvoteCount !== 0 && "text-blood-orange"}`}>
+                            <button onClick={() => handleVote(1)} className={`w-full flex items-center justify-center gap-x-1 border-r border-black px-4 py-2 hover:text-blood-orange cursor-pointer transition-colors duration-200 ease-in-out ${postVote === 1 && "text-blood-orange"}`}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width={24} className='fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
-                                {upvoteCount}
+                                {postVote === 1 ? upVoteVal+1 :  upVoteVal}
                             </button>
-                            <button onClick={downVote} className={`w-full flex items-center justify-center gap-x-1 border-r border-black px-4 py-2 hover:text-blood-orange cursor-pointer transition-colors duration-200 ease-in-out ${downvoteCount !== 0 && "text-blood-orange"}`}>
+                            <button onClick={() => handleVote(-1)} className={`w-full flex items-center justify-center gap-x-1 border-r border-black px-4 py-2 hover:text-blood-orange cursor-pointer transition-colors duration-200 ease-in-out ${postVote === -1 && "text-blood-orange"}`}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width={24} className='rotate-180 fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
-                                {downvoteCount > 0 ? `-${downvoteCount}`: downvoteCount}
+                                {postVote === -1 ? downVoteVal+1 : downVoteVal}
                             </button>
                         </div>
                         <div className="h-full text-sm flex items-center justify-center gap-x-1 border-r border-black px-4 py-2">
                             <svg xmlns="http://www.w3.org/2000/svg" width={24} className='fill-current' viewBox="0 0 640 640"><path d="M576 304C576 436.5 461.4 544 320 544C282.9 544 247.7 536.6 215.9 523.3L97.5 574.1C88.1 578.1 77.3 575.8 70.4 568.3C63.5 560.8 62 549.8 66.8 540.8L115.6 448.6C83.2 408.3 64 358.3 64 304C64 171.5 178.6 64 320 64C461.4 64 576 171.5 576 304z" /></svg>
-                            {comment.length ? 1 : 0}
+                            {comment.length ? commentVal + 1 : comments.length ? commentVal+comments.length : commentVal}
                         </div>
                         <div className="flex items-center justify-center gap-x-1 px-4 py-2 cursor-not-allowed transition-colors duration-200 ease-in-out opacity-50">
                             <svg xmlns="http://www.w3.org/2000/svg" width={24} className='fill-current' viewBox="0 0 640 640"><path d="M371.8 82.4C359.8 87.4 352 99 352 112L352 192L240 192C142.8 192 64 270.8 64 368C64 481.3 145.5 531.9 164.2 542.1C166.7 543.5 169.5 544 172.3 544C183.2 544 192 535.1 192 524.3C192 516.8 187.7 509.9 182.2 504.8C172.8 496 160 478.4 160 448.1C160 395.1 203 352.1 256 352.1L352 352.1L352 432.1C352 445 359.8 456.7 371.8 461.7C383.8 466.7 397.5 463.9 406.7 454.8L566.7 294.8C579.2 282.3 579.2 262 566.7 249.5L406.7 89.5C397.5 80.3 383.8 77.6 371.8 82.6z" /></svg>
@@ -359,10 +371,12 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                                 />
                             </div>
                             <div className="flex-1 flex justify-center items-center">
-                                {isLoadingModeration ? (
-                                    <OrbitProgress color="#ff3f34" size="medium" text="" textColor="" />
-                                ) : comment.length ? (
-                                    <div className='flex flex-col h-full w-full items-center py-4 justify-between'>
+                                <div className='flex flex-col h-full w-full items-center py-4 justify-start gap-y-4'>
+                                    {isLoadingModeration ? (
+                                        <div className='w-full h-full flex justify-center items-center'>
+                                            <OrbitProgress color="#ff3f34" size="medium" text="" textColor="" />
+                                        </div>
+                                    ) : comment.length ? (
                                         <div className='flex w-full gap-x-1'>
                                             <div className='flex justify-center'>
                                                 <Image
@@ -401,14 +415,110 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ) : (
-                                    <p className='text-sm font-light'>Start the conversation...</p>
-                                )}
+                                    ) : comments.length ? (
+                                        <>
+                                            {comments.map((_comment, _commentIdx) => (
+                                                <div key={`_comment_${_commentIdx}`} className='flex w-full gap-x-1'>
+                                                    <div className='flex justify-center'>
+                                                        <Image
+                                                            src="/images/avatar_mosaic.png"
+                                                            width={50}
+                                                            height={50}
+                                                            alt="Wave profile picture"
+                                                            className="w-3/4 h-fit rounded-full"
+                                                        />
+                                                    </div>
+                                                    <div className="flex flex-col w-full gap-y-1">
+                                                        <div className="flex w-full flex-col">
+                                                            <div className="flex w-full gap-x-1 items-center">
+                                                                <h2 className="cursor-not-allowed text-blood-orange text-sm">FogMessier63</h2>
+                                                                <h2 className="text-sm ml-1 font-light">@FogMessier63</h2>
+                                                                <p className='font-light'>•</p>
+                                                                <p className='text-sm font-light'>Now</p>
+                                                            </div>
+                                                        </div>
+                                                        <p className='font-normal text-md'>{_comment}</p>
+                                                        <div className='w-full flex justify-between items-center'>
+                                                            <div className="flex items-center justify-center gap-x-8 py-2">
+                                                                <div className="cursor-not-allowed text-sm flex items-center justify-center gap-x-1">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
+                                                                    0
+                                                                </div>
+                                                                <div className={`cursor-not-allowed text-sm flex items-center justify-center gap-x-1`}>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width={18} className='rotate-180 fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
+                                                                    0
+                                                                </div>
+                                                                <div className={`cursor-not-allowed text-sm flex items-center justify-center gap-x-1`}>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M576 304C576 436.5 461.4 544 320 544C282.9 544 247.7 536.6 215.9 523.3L97.5 574.1C88.1 578.1 77.3 575.8 70.4 568.3C63.5 560.8 62 549.8 66.8 540.8L115.6 448.6C83.2 408.3 64 358.3 64 304C64 171.5 178.6 64 320 64C461.4 64 576 171.5 576 304z" /></svg>
+                                                                    0
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </>
+                                    ) : null }
+                                    {
+                                        post.comments&&disagreePostIdx!==postIdx&&post.comments.map((_comment, idx) => (
+                                            <div key={`_embedded_comment_${idx}`} className='flex w-full gap-x-1'>
+                                                <div className='flex justify-center'>
+                                                    <Image
+                                                        src={_comment.user.pfp_src}
+                                                        width={50}
+                                                        height={50}
+                                                        alt="Wave profile picture"
+                                                        className="w-3/4 h-fit aspect-square! rounded-full"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col w-full gap-y-1">
+                                                    <div className="flex w-full flex-col">
+                                                        <div className="flex w-full gap-x-1 items-center">
+                                                            <h2 className="cursor-not-allowed text-blood-orange text-sm">{_comment.user.name}</h2>
+                                                            <h2 className="text-sm ml-1 font-light">@{_comment.user.name}</h2>
+                                                            <p className='font-light'>•</p>
+                                                            <p className='text-sm font-light'>Now</p>
+                                                        </div>
+                                                    </div>
+                                                    <p className='font-normal text-md'>{_comment.content}</p>
+                                                    <div className='w-full flex justify-between items-center'>
+                                                        <div className="flex items-center justify-center gap-x-8 py-2">
+                                                            <div className="cursor-not-allowed text-sm flex items-center justify-center gap-x-1">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
+                                                                0
+                                                            </div>
+                                                            <div className={`cursor-not-allowed text-sm flex items-center justify-center gap-x-1`}>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width={18} className='rotate-180 fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
+                                                                0
+                                                            </div>
+                                                            <div className={`cursor-not-allowed text-sm flex items-center justify-center gap-x-1`}>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M576 304C576 436.5 461.4 544 320 544C282.9 544 247.7 536.6 215.9 523.3L97.5 574.1C88.1 578.1 77.3 575.8 70.4 568.3C63.5 560.8 62 549.8 66.8 540.8L115.6 448.6C83.2 408.3 64 358.3 64 304C64 171.5 178.6 64 320 64C461.4 64 576 171.5 576 304z" /></svg>
+                                                                0
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))
+                                    }
+                                    {
+                                        Array.from({length: commentVal-2}).map((_, i) => (
+                                            <SkeletonComment key={`skeleton_${i}`} />
+                                        ))
+                                    }
+                                </div>
                             </div>
                         </>
                     )}
                 </div>
+
+                <button onClick={copyToClipboard} className={`absolute bottom-4 bg-cream flex w-full gap-x-2 py-16 text-blood-orange border rounded-md justify-center items-center cursor-pointer transition-colors duration-200 ease-in-out font-semibold text-xl max-w-7xl ${!comment.length && 'hidden'}`} data-tooltip-id="codeCopy" data-tooltip-content={isCopied ? "Copied! You can now return to the survey" : "Click below to copy"} data-tooltip-place="top">
+                    <Tooltip id="codeCopy" isOpen style={{ backgroundColor: "#ff3f34", color: "#faf9f6", fontWeight: "700", zIndex: 50 }} />
+                    <p>
+                        {userId}
+                    </p>
+                    <svg xmlns="http://www.w3.org/2000/svg" width={24} className='fill-blood-orange' viewBox="0 0 640 640"><path d="M288 64C252.7 64 224 92.7 224 128L224 384C224 419.3 252.7 448 288 448L480 448C515.3 448 544 419.3 544 384L544 183.4C544 166 536.9 149.3 524.3 137.2L466.6 81.8C454.7 70.4 438.8 64 422.3 64L288 64zM160 192C124.7 192 96 220.7 96 256L96 512C96 547.3 124.7 576 160 576L352 576C387.3 576 416 547.3 416 512L416 496L352 496L352 512L160 512L160 256L176 256L176 192L160 192z" /></svg>
+                </button>
             </div>
             {finishedModeration && (
                 <div className='max-w-[50%] h-screen overflow-y-scroll'>
@@ -418,13 +528,6 @@ const PageContent: FC<PageContentProps> = ({ post }) => {
                     />
                 </div>
             )}
-            <button onClick={copyToClipboard} className={`absolute bottom-4 bg-cream flex w-full gap-x-2 py-16 text-blood-orange border rounded-md justify-center items-center cursor-pointer transition-colors duration-200 ease-in-out font-semibold text-xl max-w-7xl ${!comment.length && 'hidden'}`} data-tooltip-id="codeCopy" data-tooltip-content={isCopied ? "Copied! You can now return to the survey" : "Click below to copy"} data-tooltip-place="top">
-                <Tooltip id="codeCopy" isOpen style={{ backgroundColor: "#ff3f34", color: "#faf9f6", fontWeight: "700", zIndex: 50 }} />
-                <p>
-                    {userId}
-                </p>
-                <svg xmlns="http://www.w3.org/2000/svg" width={24} className='fill-blood-orange' viewBox="0 0 640 640"><path d="M288 64C252.7 64 224 92.7 224 128L224 384C224 419.3 252.7 448 288 448L480 448C515.3 448 544 419.3 544 384L544 183.4C544 166 536.9 149.3 524.3 137.2L466.6 81.8C454.7 70.4 438.8 64 422.3 64L288 64zM160 192C124.7 192 96 220.7 96 256L96 512C96 547.3 124.7 576 160 576L352 576C387.3 576 416 547.3 416 512L416 496L352 496L352 512L160 512L160 256L176 256L176 192L160 192z" /></svg>
-            </button>
         </div>
     )
 }

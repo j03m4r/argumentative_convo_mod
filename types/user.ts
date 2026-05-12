@@ -1,13 +1,22 @@
 import { Timestamp } from "firebase/firestore";
 
+export interface PostKey {
+  type: string;
+  idx: number;
+}
+
 export type UserData = {
   hasCompletedInitialRatings: boolean;
   initialRatings: number[];
   disagreePostIdx: number;
-  auxPostIdx1: number;
-  auxPostIdx2: number;
+  disagreePage: PostKey[];
+  agreePage: PostKey[];
+  respondPage: PostKey[];
+  postVotes: number[];
+  postComments: Record<string, string[]>;
+  page2StartedAt: Timestamp|null,
+  page3StartedAt: Timestamp|null,
   comment: string;
-  randomPostOrder: string[];
   initialResponse: string;
   revisedResponse: string;
   conversation: string[];

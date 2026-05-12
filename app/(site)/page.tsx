@@ -1,23 +1,49 @@
 "use client";
 import { artificial_intelligence_posts, Post as P, vaccine_posts, posts } from "@/lib/experiment_materials/posts";
-import { getUserData } from "@/lib/firebase/firestore";
+import { getUserData, updatePostVotes, setPage2StartedAt, setPage3StartedAt } from "@/lib/firebase/firestore";
 import { useUser } from "@/providers/UserProvider";
-import { UserData } from "@/types/user";
-import { useEffect, useState } from "react";
+import { UserData, PostKey } from "@/types/user";
+import { useEffect, useState, useRef } from "react";
 import { OrbitProgress } from "react-loading-indicators";
 import Post from "./components/Post";
 import { Tooltip } from 'react-tooltip'
+import { useSearchParams, useRouter } from 'next/navigation';
+import { schedulePageTransition } from "@/lib/PageTimer";
+import SkeletonPost from "./components/SkeletonPost";
+
+const pagePostUpvoteCounts = {
+    "1": [13, 8, 41],
+    "2": [34, 21, 5],
+    "3": [2, 8, 14]
+}
+
+const pagePostDownvoteCounts = {
+    "1": [5, 3, 12],
+    "2": [2, 8, 19],
+    "3": [17, 1, 4]
+}
+
+const pagePostCommentCounts = {
+    "1": [3, 6, 7],
+    "2": [7, 4, 2],
+    "3": [4, 5, 7]
+}
 
 export default function HomePage() {
-    const [randomPosts, setRandomPosts] = useState<P[]>([]);
-    const [disagreePost, setDisagreePost] = useState<P | null>(null);
+    const [disagreePage, setDisagreePage] = useState<{ idx: number; type: string; post: P }[]>([]);
+    const [agreePage, setAgreePage] = useState<{ idx: number; type: string; post: P }[]>([]);
+    const [respondPage, setRespondPage] = useState<{ idx: number; type: string; post: P }[]>([]);
+    const [postVotes, setPostVotes] = useState<number[]>(Array(18).fill(0));
+    const [comments, setComments] = useState<string[][]>(Array(18).fill([]))
     const [disagreePostIdx, setDisagreePostIdx] = useState(-1);
-    const [aiPost, setAIPost] = useState<P | null>(null);
-    const [vaccinePost, setVaccinePost] = useState<P | null>(null);
-    const [aiPostIdx, setAIPostIdx] = useState(-1);
-    const [vaccinePostIdx, setVaccinePostIdx] = useState(-1);
     const [isLoading, setIsLoading] = useState(true);
+    const [canNavigateNext, setCanNavigateNext] = useState(false);
     const { userId } = useUser();
+    const searchParams = useSearchParams();
+    const { replace } = useRouter();
+    const page = searchParams.get("page");
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         async function fetchPosts() {
@@ -34,35 +60,82 @@ export default function HomePage() {
                     return;
                 }
 
-                // Set auxiliary posts
-                const _disagreePost = posts[userData.disagreePostIdx]
-                const _aiPost = artificial_intelligence_posts[userData.auxPostIdx1];
-                const _vaccinePost = vaccine_posts[userData.auxPostIdx2];
+                const retPost = (postKey: PostKey) => {
+                    let _post = null;
+                    if (postKey.type === "aux") {
+                        if (postKey.idx >=4) {
+                            _post = vaccine_posts[postKey.idx - 4];
+                         } else {
+                            _post = artificial_intelligence_posts[postKey.idx];
+                         }
+                    } else {
+                        _post = posts[postKey.idx];
+                    }
+                    return _post;
+                }
 
-                setAIPost(_aiPost);
-                setAIPostIdx(userData.auxPostIdx1);
-                setVaccinePost(_vaccinePost);
-                setVaccinePostIdx(userData.auxPostIdx2);
-                setDisagreePost(_disagreePost);
+                if (!page) {
+                    replace("/?page=1");
+                    return;
+                }
+
+                const disagreePagePostKeys = userData.disagreePage;
+                const agreePagePostKeys = userData.agreePage;
+                const respondPagePostKeys = userData.respondPage;
+
+                if (disagreePage.length === 0) {
+                    const disagreePage = disagreePagePostKeys.map((postKey) => {
+                        return { "idx": postKey.idx, "type": postKey.type, "post": retPost(postKey) }
+                    })
+                    setDisagreePage(disagreePage);
+                }
+                if (agreePage.length === 0) {
+                    const agreePage = agreePagePostKeys.map((postKey) => {
+                        return { "idx": postKey.idx, "type": postKey.type, "post": retPost(postKey) }
+                    })
+                    setAgreePage(agreePage);
+                }
+                if (respondPage.length === 0) {
+                    const respondPage = respondPagePostKeys.map((postKey) => {
+                        return { "idx": postKey.idx, "type": postKey.type, "post": retPost(postKey) }
+                    })
+                    setRespondPage(respondPage);
+                }
+
                 setDisagreePostIdx(userData.disagreePostIdx);
 
-                let _posts = [];
-                for (let i = 0; i < userData.randomPostOrder.length; i++) {
-                    const _postType = userData.randomPostOrder[i];
-                    if (_postType === "ai") {
-                        _posts.push(_aiPost);
-                    } else if (_postType === "vaccine") {
-                        _posts.push(_vaccinePost);
-                    } else {
-                        _posts.push(_disagreePost);
-                    }
-                }
-                setRandomPosts(_posts);
+                setPostVotes(userData.postVotes);
+                setComments(Object.keys(userData.postComments).map((key: string) => userData.postComments[key]))
 
-                // setTimeout(function() {
-                //     setIsLoading(false);
-                // }, 5000);
                 setIsLoading(false);
+                if (page === "1") {
+                    await setPage2StartedAt(userId);
+                    const startedAt = userData.page2StartedAt?.toMillis() ?? Date.now();
+                    const remaining = Math.max(0, 30000 - (Date.now() - startedAt));
+
+                    if (remaining === 0) {
+                        replace("/?page=2");
+                        return;
+                    }
+
+                    schedulePageTransition(remaining, () => replace("/?page=2"));
+                }
+
+                if (page === "2") {
+                    await setPage3StartedAt(userId);
+                    const startedAt = userData.page3StartedAt?.toMillis() ?? Date.now();
+                    const remaining = Math.max(0, 30000 - (Date.now() - startedAt));
+
+                    if (remaining === 0) {
+                        setCanNavigateNext(true);
+                        return;
+                    }
+
+                    schedulePageTransition(remaining, () => setCanNavigateNext(true));
+                }
+                if (page === "3") {
+                    setCanNavigateNext(false);
+                }
             } catch (error) {
                 console.error("Error fetching posts:", error);
                 setIsLoading(false);
@@ -70,7 +143,33 @@ export default function HomePage() {
         }
 
         fetchPosts();
-    }, [userId]);
+
+        return () => {
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            timeoutRef.current = null;  // reset so re-entry guard works correctly
+            intervalRef.current = null;
+        };
+    }, [userId, page]);
+
+    const handleSetPostVoteVal = async (postIdx: number, newVal: number) => {
+        if (!userId) {
+            return;
+        }
+
+        try {
+            await updatePostVotes(userId, postIdx, newVal);
+        } catch (error) {
+            console.error("Error updating post votes:", error);
+        } finally {
+            setPostVotes((prevVotes) => {
+                const newVotes = [...prevVotes];
+                newVotes[postIdx] = newVal;
+                return newVotes;
+            });
+        }
+    }
+        
 
     if (isLoading) {
         return (
@@ -84,37 +183,81 @@ export default function HomePage() {
         <main className="flex w-full h-screen">
             <div className="flex h-full w-full gap-x-4">
                 <div className="flex flex-col w-full bg-cream justify-between items-center h-fit xl:max-w-[900px]">
-                    <div className="bg-cream sticky top-0 flex items-center gap-y-1 justify-start w-full py-2 border-b border-black">
+                    <div className="bg-cream top-0 flex items-center gap-y-1 justify-start w-full py-2 border-b border-black">
                         <h2 className="py-2 px-4 font-bold cursor-not-allowed opacity-50">For you</h2>
                         <h2 className="py-2 px-4 font-light cursor-not-allowed opacity-50">Following</h2>
                     </div>
-                    <div className="flex flex-col h-full w-full gap-y-2 pb-2">
-                        {randomPosts.map((_post, idx) => {
-                            if (!disagreePost || !aiPost || !vaccinePost) return null;
-                            if (_post.title === disagreePost.title) {
+                    <div className="flex bg-cream px-4 w-full border-2 mt-1 sticky top-2 gap-x-4 border-blood-orange shadow-lg z-50">
+                        {page === "1" && (
+                            <div className="p-2 flex justify-center items-center min-h-full">
+                                <OrbitProgress color="#ff3f34" size="small" text="" textColor="" />
+                            </div>
+                        )}
+                        <div className="flex flex-col py-4 flex-1 gap-y-1 bg-cream">
+                            <h1 className="text-xl font-bold text-blood-orange">
+                                {page === "1" ? "Personalizing Your Feed..." : page === "2" ? "Personalized Feed #1" : "Personalized Feed #2"}
+                            </h1>
+                            <h2 className="text-lg">
+                                {
+                                    page === "1" ? "While we configure your feed, please interact with content. Commenting and voting will help us understand your preferences better."
+                                    : page === "2" ? "Here are some posts you might like based on your preferences. Feel free to interact with them!"
+                                    : "Here are some more posts you might like. We've outlined one post for you to respond to"
+                                }
+                            </h2>
+                        </div>
+                        {page === "2" && canNavigateNext && (
+                            <div className="flex justify-center items-center min-h-full">
+                                <button
+                                    onClick={() => replace("/?page=3")}
+                                    className="bg-blood-orange text-cream font-semibold rounded-lg cursor-pointer px-4 py-2 border border-blood-orange hover:bg-cream hover:border-blood-orange hover:text-blood-orange transition-all ease-in-out duration-200 border-x"
+                                >
+                                    Next Page
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex flex-col h-full w-full gap-y-2 py-2">
+                        {page === "2" ? agreePage.map((_post, idx) => (
+                                <div key={`randPost_${idx}`} className="flex flex-col w-full gap-y-2">
+                                    <Post setPostVoteVal={handleSetPostVoteVal} comments={comments[_post.type === "aux" ? _post.idx+9 : _post.idx]} disagreePostIdx={disagreePostIdx} randIdx={idx} postType={_post.type} post={_post.post} postIdx={_post.idx} upVoteVal={pagePostUpvoteCounts[page][idx]} downVoteVal={pagePostDownvoteCounts[page][idx]} commentVal={pagePostCommentCounts[page][idx]} voteVal={postVotes[_post.type==="aux" ? _post.idx + 9 : _post.idx]} />
+                                    {idx!==2&&<div className="border-b border-black w-full" />}
+                                </div>
+                            )
+                        ) : page === "3" ? respondPage.map((_post, idx) => {
+                            if (_post.idx === disagreePostIdx && _post.type === "opinion") {
                                 return (
                                     <div key={`randPost_${idx}`} className="flex flex-col w-full gap-y-2">
                                         <Tooltip id="replyPost" isOpen style={{ backgroundColor: "#ff3f34", color: "#faf9f6", fontWeight: "700", zIndex: 50 }} />
-                                        <Post randIdx={idx} postType="p" post={disagreePost} postIdx={disagreePostIdx} />
+                                        <Post setPostVoteVal={handleSetPostVoteVal} comments={comments[_post.idx]} disagreePostIdx={disagreePostIdx} randIdx={idx} postType={_post.type} post={_post.post} postIdx={_post.idx} upVoteVal={pagePostUpvoteCounts[page][idx]} downVoteVal={pagePostDownvoteCounts[page][idx]} commentVal={pagePostCommentCounts[page][idx]} voteVal={postVotes[_post.idx]} />
+                                        {idx!==2&&<div className="border-b border-black w-full" />}
+                                    </div>
+                                )}
+                            else {
+                                return (
+                                    <div key={`randPost_${idx}`} className="flex flex-col w-full gap-y-2">
+                                        <Post setPostVoteVal={handleSetPostVoteVal} comments={comments[_post.type === "aux" ? _post.idx+9 : _post.idx]} disagreePostIdx={disagreePostIdx} randIdx={idx} postType={_post.type} post={_post.post} postIdx={_post.idx} upVoteVal={pagePostUpvoteCounts[page][idx]} downVoteVal={pagePostDownvoteCounts[page][idx]} commentVal={pagePostCommentCounts[page][idx]} voteVal={postVotes[_post.type==="aux" ? _post.idx + 9 : _post.idx]} />
                                         {idx!==2&&<div className="border-b border-black w-full" />}
                                     </div>
                                 )
-                            } else if (_post.title === aiPost.title) {
-                                return (
-                                    <div key={`randPost_${idx}`} className="flex flex-col w-full gap-y-2">
-                                        <Post randIdx={idx} postType="ai" post={aiPost} postIdx={aiPostIdx} />
-                                        {idx!==2&&<div className="border-b border-black w-full" />}
-                                    </div>
-                                )
-                            } else {
-                                return (
-                                    <div key={`randPost_${idx}`} className="flex flex-col w-full gap-y-2">
-                                        <Post randIdx={idx} postType="vaccine" post={vaccinePost} postIdx={vaccinePostIdx} />
-                                        {idx!==2&&<div className="border-b border-black w-full" />}
-                                    </div>
-                                );
                             }
-                        })}
+                        }) : disagreePage.map((_post, idx) => (
+                                <div key={`randPost_${idx}`} className="flex flex-col w-full gap-y-2">
+                                    <Post setPostVoteVal={handleSetPostVoteVal} comments={comments[_post.type === "aux" ? _post.idx+9 : _post.idx]} disagreePostIdx={disagreePostIdx} randIdx={idx} postType={_post.type} post={_post.post} postIdx={_post.idx} upVoteVal={pagePostUpvoteCounts["1"][idx]} downVoteVal={pagePostDownvoteCounts["1"][idx]} commentVal={pagePostCommentCounts["1"][idx]} voteVal={postVotes[_post.type==="aux" ? _post.idx + 9 : _post.idx]} />
+                                    {idx!==2&&<div className="border-b border-black w-full" />}
+                                </div>
+                            ))
+                        }
+                        <>
+                            <div className="border-b border-gray-200 w-full" />
+                            {
+                                Array.from({ length: 7 }).map((_, i) => (
+                                    <div key={`skeleton_${i}`} className="flex flex-col w-full gap-y-2">
+                                        <SkeletonPost />
+                                        {i !== 2 && <div className="border-b border-gray-200 w-full" />}
+                                    </div>
+                                ))
+                            }
+                        </>
                     </div>
                 </div>
                 <div className="gap-y-2 items-center justify-start flex-1 sticky top-0 self-start">
