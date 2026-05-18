@@ -143,7 +143,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                             setIsModeration(true);
                         }
                     }
-                    setInitialReply(userData.initialResponse || "");
+                    setInitialReply(userData.comment.length > 0 ? "" : (userData.initialResponse || ""));
                     setRevisedReply(userData.comment.length > 0 ? "" : (userData.revisedResponse || ""));
                     setDisagreePostIdx(userData.disagreePostIdx);
 
@@ -198,6 +198,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                 if (finishedModeration) {
                     setComment(reply);
                     updateComment(userId, reply);
+                    setInitialReply("");
                     setRevisedReply("")
                     setModalIsOpen(true);
                 } else {
@@ -391,6 +392,8 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                                 <ReplyInput
                                     post={post}
                                     comment={comment}
+                                    postIdx={postIdx}
+                                    disagreePostIdx={disagreePostIdx}
                                     handleReply={handleReply}
                                     initialReply={finishedModeration ? revisedReply : initialReply}
                                     updateReply={updateReply}
@@ -403,7 +406,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                                         <div className='w-full h-full flex justify-center items-center'>
                                             <OrbitProgress color="#ff3f34" size="medium" text="" textColor="" />
                                         </div>
-                                    ) : comment.length ? (
+                                    ) : comment.length&&disagreePostIdx==postIdx ? (
                                         <div className='flex w-full gap-x-1'>
                                             <div className='flex justify-center'>
                                                 <Image

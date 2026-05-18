@@ -12,9 +12,11 @@ interface ReplyInputProps {
     initialReply: string;
     updateReply: (reply: string) => void;
     comment: string;
+    postIdx: number;
+    disagreePostIdx: number;
 }
 
-const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, initialReply, updateReply }) => {
+const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, initialReply, updateReply, postIdx, disagreePostIdx }) => {
     const [replyText, setReplyText] = useState(initialReply || "");
     const [isFocused, setIsFocused] = useState(initialReply && initialReply.trim().length > 0);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -67,14 +69,14 @@ const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, 
 
                 {/* Textarea */}
                 <textarea
-                    disabled={comment.length>0}
+                    disabled={comment.length>0&&postIdx===disagreePostIdx}
                     ref={textareaRef}
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
                     placeholder='Post your reply'
-                    className={`w-full resize-none outline-none text-lg min-h-[60px] max-h-[400px] overflow-y-auto placeholder:text-gray-400 ${comment!==""&&"cursor-not-allowed"}`}
+                    className={`w-full resize-none outline-none text-lg min-h-[60px] max-h-[400px] overflow-y-auto placeholder:text-gray-400 ${comment!==""&&disagreePostIdx===postIdx&&"cursor-not-allowed"}`}
                     rows={1}
                 />
 
