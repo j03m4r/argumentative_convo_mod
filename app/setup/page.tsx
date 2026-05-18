@@ -16,7 +16,7 @@ enum PHASE {
 const header_text = [
     {
         header: "Welcome",
-        subheader: "We're excited for you to try out our AI-powered discussion platform. Part of our goal for these user tests is for you to interact with and experience novel social media features involving discussions to help us get a sense of their usability. In your interactions with our interface, you will (1) specify your content preferences, (2) explore content on your feed, and (3) respond to a post on your home feed. Note that many features will be unavailable as this is just a beta testing of the platform."
+        subheader: "We want you to interact with and experience novel social media features involving discussions to help us get a sense of their usability. In your interactions with our interface, you will (1) specify your content preferences, (2) explore content on your feed, and (3) respond to a post on your home feed. Note that many features will be unavailable as this is just a beta testing of the platform."
     },
     {
         header: "Your profile",
@@ -99,13 +99,13 @@ export default function SetupPage() {
                 <h2 className="text-xl xl:text-2xl">
                     {phase === PHASE.INTRO_PHASE ? (
                         <div>
-                            We're excited for you to try out our AI-in-the-loop discussion platform. Part of our goal for this user test is for you to interact with new social media features involving <b>controversial</b> discussions to help us get a sense of their usability. Your tasks:
+                            We want you to interact with new social media features for <b>controversial</b> discussions. You will do these tasks:
                             <ol className="p-4">
                                 <li>1. Specify your content preferences</li>
-                                <li>2. Explore content on your feed</li>
-                                <li>3. Respond to a post on your home feed</li>
+                                <li>2. Explore and interact with multiple feeds</li>
+                                <li>3. Respond to a post on the final feed</li>
                             </ol> 
-                            <b>Note that some features will be unavailable/unclickable</b>
+                            <b className="text-sm font-light">* Note that some extra features will be unavailable or unclickable</b>
                         </div>
                     ) : (header_text[phase].subheader)}
                 </h2>

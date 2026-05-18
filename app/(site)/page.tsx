@@ -10,17 +10,18 @@ import { Tooltip } from 'react-tooltip'
 import { useSearchParams, useRouter } from 'next/navigation';
 import { schedulePageTransition } from "@/lib/PageTimer";
 import SkeletonPost from "./components/SkeletonPost";
+import PieChart from "./components/PieChart";
 
 const pagePostUpvoteCounts = {
-    "1": [13, 8, 41],
-    "2": [34, 21, 5],
-    "3": [2, 8, 14]
+    "1": [21, 23, 41],
+    "2": [34, 21, 10],
+    "3": [18, 26, 14]
 }
 
 const pagePostDownvoteCounts = {
-    "1": [5, 3, 12],
-    "2": [2, 8, 19],
-    "3": [17, 1, 4]
+    "1": [14, 19, 12],
+    "2": [13, 11, 19],
+    "3": [17, 15, 18]
 }
 
 const pagePostCommentCounts = {
@@ -114,11 +115,13 @@ export default function HomePage() {
                     const remaining = Math.max(0, 30000 - (Date.now() - startedAt));
 
                     if (remaining === 0) {
-                        replace("/?page=2");
+                        setCanNavigateNext(true);
                         return;
+                    } else {
+                        setCanNavigateNext(false);
                     }
 
-                    schedulePageTransition(remaining, () => replace("/?page=2"));
+                    schedulePageTransition(remaining, () => setCanNavigateNext(true));
                 }
 
                 if (page === "2") {
@@ -129,6 +132,8 @@ export default function HomePage() {
                     if (remaining === 0) {
                         setCanNavigateNext(true);
                         return;
+                    } else {
+                        setCanNavigateNext(false);
                     }
 
                     schedulePageTransition(remaining, () => setCanNavigateNext(true));
@@ -188,9 +193,9 @@ export default function HomePage() {
                         <h2 className="py-2 px-4 font-light cursor-not-allowed opacity-50">Following</h2>
                     </div>
                     <div className="flex bg-cream px-4 w-full border-2 mt-1 sticky top-2 gap-x-4 border-blood-orange shadow-lg z-50">
-                        {page === "1" && (
+                        {page !== "3"&&(
                             <div className="p-2 flex justify-center items-center min-h-full">
-                                <OrbitProgress color="#ff3f34" size="small" text="" textColor="" />
+                                <PieChart numerator={Number(Number.isInteger(Number(page)) ? page : 0)} denominator={3} />
                             </div>
                         )}
                         <div className="flex flex-col py-4 flex-1 gap-y-1 bg-cream">
@@ -201,17 +206,17 @@ export default function HomePage() {
                                 {
                                     page === "1" ? "While we configure your feed, please interact with content. Commenting and voting will help us understand your preferences better."
                                     : page === "2" ? "Here are some posts you might like based on your preferences. Feel free to interact with them!"
-                                    : "Here are some more posts you might like. We've outlined one post for you to respond to"
+                                    : "This is your final feed. We've outlined one post for you to respond to"
                                 }
                             </h2>
                         </div>
-                        {page === "2" && canNavigateNext && (
+                        {canNavigateNext && (
                             <div className="flex justify-center items-center min-h-full">
                                 <button
-                                    onClick={() => replace("/?page=3")}
+                                    onClick={() => {replace(`/?page=${Number(Number.isInteger(Number(page)) ? page : 2)+1}`), setCanNavigateNext(false)}}
                                     className="bg-blood-orange text-cream font-semibold rounded-lg cursor-pointer px-4 py-2 border border-blood-orange hover:bg-cream hover:border-blood-orange hover:text-blood-orange transition-all ease-in-out duration-200 border-x"
                                 >
-                                    Next Page
+                                    Next Feed
                                 </button>
                             </div>
                         )}

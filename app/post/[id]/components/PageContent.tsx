@@ -199,6 +199,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                     setComment(reply);
                     updateComment(userId, reply);
                     setRevisedReply("")
+                    setModalIsOpen(true);
                 } else {
                     updateInitialResponse(userId, reply)
                     setInitialReply(reply)
@@ -272,15 +273,41 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                     </div>
                     <div className='z-50 absolute blur-none opacity-100 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-cream p-16 rounded-xl shadow-xl border text-xl'>
                         <svg onClick={() => setModalIsOpen(false)} xmlns="http://www.w3.org/2000/svg" width={24} className='fill-black hover:fill-blood-orange cursor-pointer absolute right-4 top-4 transition-colors duration-200 ease-in-out' viewBox="0 0 640 640"><path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z"/></svg>
-                        {prompt === "control" ? (
-                            <div className='flex flex-col gap-y-1'>
-                                <h1 className="text-xl font-bold text-blood-orange">
-                                    Hold on...
+                        {comment ? (
+                           <div className='flex flex-col gap-y-4'>
+                                <h1 className="text-2xl font-bold text-blood-orange">
+                                    Tasks complete!
                                 </h1>
-                                <div className='text-lg'>Are you sure you want to post this? Reconsider and <b className='text-blood-orange'>finish responding to the post.</b></div>
+                                <div className='text-xl'>Close this textbox, copy the completion code, and return to the survey</div>
+                            </div> 
+                        ) : prompt === "control" ? (
+                            <div className='flex flex-col gap-y-4'>
+                                <h1 className="text-2xl font-bold text-blood-orange">
+                                    Want to review this before posting?
+                                </h1>
+                                <div className='flex w-full justify-center items-center p-2 flex-col border border-gray-200 rounded-lg'>
+                                    <div className="flex w-full gap-x-1 items-center">
+                                        <h2 className="cursor-not-allowed text-blood-orange text-sm">FogMessier63</h2>
+                                        <h2 className="text-sm ml-1 font-light">@FogMessier63</h2>
+                                    </div>
+                                    <p className='w-full'>{initialReply}</p>
+                                </div>
+                                <div className='text-xl'>Close this textbox and finish responding to the post.</div>
                             </div>
                         ) : (
-                            <div>Now that you have finished conversing with our AI chatbot, you are free to close this textbox and <b className='text-blood-orange'>finish responding to the post.</b></div>
+                            <div className='flex flex-col gap-y-4'>
+                                <h1 className="text-2xl font-bold text-blood-orange">
+                                    Saved reply
+                                </h1>
+                                <div className='flex w-full justify-center items-center p-2 flex-col border border-gray-200 rounded-lg'>
+                                    <div className="flex w-full gap-x-1 items-center">
+                                        <h2 className="cursor-not-allowed text-blood-orange text-sm">FogMessier63</h2>
+                                        <h2 className="text-sm ml-1 font-light">@FogMessier63</h2>
+                                    </div>
+                                    <p className='w-full'>{initialReply}</p>
+                                </div>
+                                <div className='text-xl'>Now that you have finished conversing with our AI chatbot, close this textbox and finish responding to the post.</div>
+                            </div>
                         )}
                     </div>
                 </>
@@ -477,7 +504,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                                                             <h2 className="cursor-not-allowed text-blood-orange text-sm">{_comment.user.name}</h2>
                                                             <h2 className="text-sm ml-1 font-light">@{_comment.user.name}</h2>
                                                             <p className='font-light'>•</p>
-                                                            <p className='text-sm font-light'>Now</p>
+                                                            <p className='text-sm font-light'>{_comment.timestamp}</p>
                                                         </div>
                                                     </div>
                                                     <p className='font-normal text-md'>{_comment.content}</p>
@@ -485,15 +512,15 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                                                         <div className="flex items-center justify-center gap-x-8 py-2">
                                                             <div className="cursor-not-allowed text-sm flex items-center justify-center gap-x-1">
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
-                                                                0
+                                                                {6 + postIdx*2 - idx}
                                                             </div>
                                                             <div className={`cursor-not-allowed text-sm flex items-center justify-center gap-x-1`}>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width={18} className='rotate-180 fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
-                                                                0
+                                                                {2 + postIdx + idx}
                                                             </div>
                                                             <div className={`cursor-not-allowed text-sm flex items-center justify-center gap-x-1`}>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M576 304C576 436.5 461.4 544 320 544C282.9 544 247.7 536.6 215.9 523.3L97.5 574.1C88.1 578.1 77.3 575.8 70.4 568.3C63.5 560.8 62 549.8 66.8 540.8L115.6 448.6C83.2 408.3 64 358.3 64 304C64 171.5 178.6 64 320 64C461.4 64 576 171.5 576 304z" /></svg>
-                                                                0
+                                                                {2 + (postIdx%2 * -1) + idx}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -512,7 +539,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                     )}
                 </div>
 
-                <button onClick={copyToClipboard} className={`absolute bottom-4 bg-cream flex w-full gap-x-2 py-16 text-blood-orange border rounded-md justify-center items-center cursor-pointer transition-colors duration-200 ease-in-out font-semibold text-xl max-w-7xl ${!comment.length && 'hidden'}`} data-tooltip-id="codeCopy" data-tooltip-content={isCopied ? "Copied! You can now return to the survey" : "Click below to copy"} data-tooltip-place="top">
+                <button onClick={copyToClipboard} className={`fixed bottom-4 bg-cream flex w-full gap-x-2 py-16 text-blood-orange border rounded-md justify-center items-center cursor-pointer transition-colors duration-200 ease-in-out font-semibold text-xl max-w-7xl ${!comment.length && 'hidden'}`} data-tooltip-id="codeCopy" data-tooltip-content={isCopied ? "Copied! You can now return to the survey" : "Click below to copy"} data-tooltip-place="top">
                     <Tooltip id="codeCopy" isOpen style={{ backgroundColor: "#ff3f34", color: "#faf9f6", fontWeight: "700", zIndex: 50 }} />
                     <p>
                         {userId}
@@ -520,8 +547,9 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                     <svg xmlns="http://www.w3.org/2000/svg" width={24} className='fill-blood-orange' viewBox="0 0 640 640"><path d="M288 64C252.7 64 224 92.7 224 128L224 384C224 419.3 252.7 448 288 448L480 448C515.3 448 544 419.3 544 384L544 183.4C544 166 536.9 149.3 524.3 137.2L466.6 81.8C454.7 70.4 438.8 64 422.3 64L288 64zM160 192C124.7 192 96 220.7 96 256L96 512C96 547.3 124.7 576 160 576L352 576C387.3 576 416 547.3 416 512L416 496L352 496L352 512L160 512L160 256L176 256L176 192L160 192z" /></svg>
                 </button>
             </div>
-            {finishedModeration && (
-                <div className='max-w-[50%] h-screen overflow-y-scroll'>
+            {finishedModeration && savedMessages.length && (
+                <div className='max-w-[50%] h-screen overflow-y-scroll flex flex-col'>
+                    <div className='flex w-full px-4 justify-center items-center py-4 text-xl font-semibold border-b border-gray-200'>Chat Log</div>
                     <ChatMessages 
                         userPfp="/images/avatar_mosaic.png"
                         savedMessages={savedMessages}
