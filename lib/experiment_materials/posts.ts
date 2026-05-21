@@ -11,8 +11,8 @@ export type Post = {
 
 export const posts: Post[] = [
     {
-        title: "An abortion should require the consent of the father",
-        content: "Provided there is no threat to the mother's life or health and the baby was conceived through consensual sex, if a woman opts to terminate the pregnancy, she should REQUIRE the consent of the father. The reality is the father's child too. I don't get why this is even controversial - the father should be prepared to raise the child alone if the mother won't. But it is still the father's child!! Men's rights are constantly ignored in this debate and he should have a say in its life. Women get all the fucking power and men get none, I hate it.",
+        title: "An abortion should REQUIRE the consent of the father",
+        content: "honestly I think this is such a fucking given. provided there is no threat to the mother's life or health, and the baby was conceived through consensual sex, if a woman opts to terminate the pregnancy, she should require the consent of the father. The reality is it is the father's fucking child too. the father should definitely be prepared to raise the child alone if the woman don't consent. But ultimately it is still the FATHER's child and he should have a say in whether or not to keep it.",
         user: {
             name: "KneelRock7876",
             pfp_src: "/images/cool_tie_pfp.jpg"
@@ -40,8 +40,8 @@ export const posts: Post[] = [
         timestamp: "4h"
     },
     {
-        title: "Men should not have vaginal sex women if they can't handle women having control over whether they give birth or not.",
-        content: "To be honest, I think this is more about men not being able to stand women having more decision making authority than them. But in any case, every pregnancy inherently carries health risks for women. For instance, my experience with gestational diabetes twice has left me pre-diabetic. Additionally, I required a c-section when my first child was breech—major surgery with significant medical risks. This creates a fundamental asymmetry: women bear ALL the physical risk of pregnancy, while men don't face any health consequences. Given that pregnancy embeds these risks exclusively in women's bodies, it seems reasonable that women should retain decision-making authority regarding abortion. I recognize this perspective may be controversial, but I think it's worth considering how the unequal distribution of biological risk should inform our thinking about reproductive decisions.",
+        title: "Men should not have fucking vaginal sex women if they can't handle women having control over whether they give birth or not lol",
+        content: "to be honest, this is more about men being cry babies. but every pregnancy carries risk to a woman's life and health. I am now pre-diabetic due to having gestational diabetes twice. I had to have a c-section due to my first child being breech, major surgery that carries huge risk. There is no fairness in pregnancy because only one party assumes all the risk - men don't risk their health and lives to have kids you idiots",
         user: {
             name: "CrimsonFogger1192",
             pfp_src: "/images/sunset_pfp.jpg"
@@ -70,7 +70,7 @@ export const posts: Post[] = [
     },
     {
         title: "Honestly Trump is a Fascist.",
-        content: "Honestly, I don't know how anyone could vote for him, he is literally a fascist who wants to end democracy in the, formally, United States of America. I'm particularly worried about his immigration enforcement proposals, which seem excessively aggressive to me. It's like he's using his Gestapo to round up all the undocumented patriots. No one is illegal except for Trump. Ugh, it just makes me so mad because the right seems to not understand this point of view at all.",
+        content: "I honestly, I don't know how anyone could vote for him, he is literally a fascist who wants to end democracy in the formally United States. Using his Gestapo to round up undocumented patriots. No one is illegal except for Trump. Ugh just makes so mad",
         user: {
             name: "VaultCreeper8823",
             pfp_src: "/images/eagle_pfp.jpg"
@@ -98,8 +98,8 @@ export const posts: Post[] = [
         timestamp: "5h"
     },
     {
-        title: 'No sweetheart....the USA is not "Fascist"',
-        content: `It's honestly fucking hilarious to watch these TikTokers and 20-year-old community college students lounging on their couches with their $1000 phones, acting like they're leading some heroic battle against "fascism." Take a seat, cupcake. You wouldn't last a single day in a real fascist regime. If you spent less time rotting your brain on social media and actually lived a little, you might be capable of critical thought, you idiots. The idea that America is somehow fighting against actual, freedom-crushing fascism is not only insane, it's laughable. Time to GROW up.`,
+        title: 'No sweetheart....Trump is not "Fascist"',
+        content: `It's honestly fucking hilarious to watch these TikTokers and 20-year-old community college bums lounging on their couches with their $1000 phones, acting like they're leading some heroic battle against "fascism." Take a seat, cupcake. You wouldn't last a SINGLE day in a real fascist regime. If you spent less time rotting your brain on social media and actually lived a little, you might be capable of critical thought. The idea that America is somehow fighting against actual, freedom-crushing fascism is not only insane, it's laughable. ITS TIME TO GROW UP`,
         user: {
             name: "SlateWanderer4401",
             pfp_src: "/images/default_w_glasses_pfp.jpg"
@@ -127,8 +127,8 @@ export const posts: Post[] = [
         timestamp: "4h"
     },
     {
-        title: 'I fucking hate ALL religions, but ESPECIALLY Islam. Is there anything worse?',
-        content: "I struggle to understand how some interpretations of Islam align with modern values, especially regarding women's rights. Why would any woman in the 21st Century support a religion that brutalizes, imprisons, disenfranchises, and denies freedoms to more than 50% of the populace? To me, this is absurd. I seriously wonder why more women in the 21st century would embrace religious frameworks that seem to limit their autonomy and opportunities. Additionally, where are the moderate and progressive Muslim males, and why aren't they defending their women, their sisters, mothers, daughters?",
+        title: 'I hate ALL religions, but ESPECIALLY Islam. Is there anything worse?',
+        content: "I can't think of a more despicable religion than Islam. Why would any woman in the 21st Century support a religion that brutalizes and imprisons and disenfranchises and denies freedoms to more than 50% of the populace? It doesn't make any fucking sense. And where are the moderate and progressive Muslim males, and why aren't they defending their women, their sisters and mothers and daughters? Absolutely fucking disgusting. The WORST.",
         user: {
             name: "MooseHacker6637",
             pfp_src: "/images/egg_pfp.jpg"
@@ -156,8 +156,8 @@ export const posts: Post[] = [
         timestamp: "3h"
     },
     {
-        title: "Islam is the best Religion, and I can prove it!!!!",
-        content: "islam is a preserved religion. The Quran was mass memorised - it is the same word by word. Hundreds of thousands (or even millions) of hadith (sayings of our Prophet) exist, with thousands authenticated. Islamic sciences (fiqh, aqidah, tassawuf) are well developed. Other idiot religions can't even keep their texts straight. our Prophet Hazrat Muhammad S.A.W. is the last Prophet (but we believe in Jesus too). If a Christian accepts jesus and his goons as prophets, then why not Prophet Muhammad, leader of a much larger Ummah (as far as I am aware)? Why stop at Jesus (Isa A.S.)? Christians are just being stubborn and illogical at this point. Thirdly, as far as I aware, Muslims are much more practising (and have much more originality) than other religions, and still have massive amounts of followers. Christianity is dying out anyway.",
+        title: "Here is why Islam is the best religion",
+        content: "I'm so sick of all these fucking Islam haters. Firstly, Islam is a preserved religion not like all these other religions like christianity. The Quran was mass memorised - it is the same word by word. Hundreds of thousands (or even millions) of hadith (sayings of our Prophet) exist, with thousands authenticated. Islamic sciences (fiqh, aqidah, tassawuf) are well developed. Secondly, our Prophet Hazrat Muhammad S.A.W. is the last Prophet (but we believe in Jesus too). If a Christian accepts Abraham, Jesus, Moses, Adam etc. as Prophets, then why not Prophet Muhammad, leader of a MUCH larger Ummah. My main question is WHY stop at Jesus????",
         user: {
             name: "TwilightSprocket9910",
             pfp_src: "/images/roblox_pfp.png"
@@ -186,7 +186,7 @@ export const posts: Post[] = [
     },
     {
         title: "Being is gay is wrong",
-        content: "While Christ doesn't explicitly address it in the New Testament, God does condemn it in the Old Testament, which suggests consistency across the Trinity - God, Christ, and the Holy Spirit. I think an important theological distinction should be made clear between orientation and behavior. According to God's view, experiencing same-sex attraction isn't inherently sinful. Rather, acting on those attractions is what conflicts with biblical standards. This distinction mirrors how many other faith traditions differentiate between temptation and action, recognizing the complexity of human experience while maintaining doctrinal principles.",
+        content: "Christ doesn't say it in the New Testament but God condemns it in the Old Testament and that's God, Christ and the Holy Spirit ALL condemning it. While it's not a sin to be gay, it is DEFINITELY a sin to act on it. and I will fucking die on that hill",
         user: {
             name: "BoulderNomad5583",
             pfp_src: "/images/two_faced_panda_pfp.jpg"
@@ -223,8 +223,8 @@ export const posts: Post[] = [
     //     timestamp: "5h"
     // },
     {
-        title: "I'm really sick of straight people.",
-        content: "I haven't been out long, less then a year now. I don't have any gay friends ( I know some people and coworkers but I wouldn't consider them friends) and i don't really know the gay crowd here where I live and covid kind of ruined my chancesof getting out there this year 😂. All of my friends are straight and I love them but I'm really tired of hanging around with straight people all the time. Is that a bad thing to say?",
+        title: "I'm really fucking sick of straight people.",
+        content: "I haven't been out long, less then a year now. I don't have any gay friends and i don't really know the gay crowd here where I live and covid kind of ruined my chances of getting out there this year 😂. All of my friends are straight but I'm honestly really tired of hanging around with straight people all the time, they really get on my nerves. Gay people are so much more fun",
         user: {
             name: "SilverTinkerer7745",
             pfp_src: "/images/gorilla_pfp.jpg"
@@ -252,8 +252,8 @@ export const posts: Post[] = [
         timestamp: "8h"
     },
     {
-        title: "Feminism IS anti-men.",
-        content: "I think it's worth examining the name itself. From what I observe, It focuses purely on females wants and needs rather than pursuing gender equality for all. In my view, it pushes women up on their pedestals, telling them the lie that they are better than men. That they deserve better than men. Additionally, they actively put down men to make themselves feel better too.",
+        title: "Feminism IS anti-men you idiots",
+        content: "Notice the name of it!!! It focuses PURELY on females wants and needs, not making the genders equal. All these feminist people talk about equality but then are filled with contradictions. It pushes women up on their pedestals, telling them the lie that they are fucking better than men. That they deserve BETTER than men. We know this isn't true lol",
         user: {
             name: "FrostGoblin3398",
             pfp_src: "/images/terminator_pfp.jpg"
@@ -281,8 +281,8 @@ export const posts: Post[] = [
         timestamp: "7h"
     },
     {
-        title: "Feminism isn't anti-men.",
-        content: `Feminism is an ideology and movement that tries to achieve gender-equality. Feminism is not anti-men because it has "fem" in it, it has "fem" in it because they are giving back what women were denied of. You are literally not able to misandric by all definitions while also being feminist.`,
+        title: "Feminism isn't fucking anti-men",
+        content: `Feminism is an ideology and movement that tries to achieve gender-equality!!! Feminism isn't anti-men because it has "fem" in it you idiots, it has "fem" in it because they are giving back what women were denied of. You are literally not able to misandric by all definitions while also being feminist.`,
         user: {
             name: "CoralDrifter8861",
             pfp_src: "/images/red_pfp.png"

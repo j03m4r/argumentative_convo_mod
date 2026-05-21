@@ -10,7 +10,7 @@ interface RatingsPhaseProps {
 
 const opinions = [
     "Men should have a say in abortion",
-    "Trump and the US are fascist",
+    "Trump is fascist",
     "Islam is wrong",
     "Being gay is wrong",
     "Feminism is anti-men"
