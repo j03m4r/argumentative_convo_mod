@@ -5,6 +5,7 @@ import type { FC } from 'react';
 import { Post } from '@/lib/experiment_materials/posts';
 import { addConversationMessage } from '@/lib/firebase/firestore';
 import { Tooltip } from 'react-tooltip'
+import { NextResponse } from 'next/dist/server/web/spec-extension/response';
 
 interface Message {
     id: string;
@@ -61,53 +62,57 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    const callOpenRouter = async (messages: Message[]): Promise<string> => {
-        const apiKey = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
+    const callClaude = async (messages: Message[]): Promise<string> => {
+        // Separate system message from conversation messages
+        const systemMessage = messages.find(msg => msg.role === 'system');
+        const conversationMessages = messages.filter(msg => msg.role !== 'system');
 
-        if (!apiKey) {
-            throw new Error('OpenRouter API key not found');
-        }
-
-        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        const response = await fetch('/api/chat', {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json',
-                'HTTP-Referer': window.location.href,
-                'X-Title': 'Y Discussion'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                model: 'anthropic/claude-sonnet-4',
-                messages: messages.map(msg => ({
+                model: 'claude-sonnet-4-6',
+                max_tokens: 300,
+                ...(systemMessage && { system: systemMessage.content }),
+                messages: conversationMessages.map(msg => ({
                     role: msg.role,
                     content: msg.content
                 })),
-                temperature: 0.7,
-                max_tokens: 300
             })
         });
 
+        const data = await response.json();
         if (!response.ok) {
-            throw new Error(`OpenRouter API error: ${response.status}`);
+            console.error('Anthropic error:', JSON.stringify(data, null, 2));
+            // throw NextResponse.json(data, { status: response.status });
         }
 
-        const data = await response.json();
-        return data.choices[0]?.message?.content || 'No response received';
+        return data.content[0]?.text || 'No response received';
     };
 
     const initializeChat = async () => {
         if (!initialSystemPrompt || !post) return;
 
         setIsLoading(true);
+        console.log(initialSystemPrompt.replaceAll("{{post_title}}", post.title).replaceAll("{{post_content}}", post.content))
         try {
             const systemMessage: Message = {
                 id: 'system',
                 role: 'system',
-                content: initialSystemPrompt.replaceAll("{{post_title}}", post.title).replaceAll("{{post_content}}", post.content).replaceAll("{{responders_message}}", initialReply),
+                content: initialSystemPrompt
+                    .replaceAll("{{post_title}}", post.title)
+                    .replaceAll("{{post_content}}", post.content),
                 timestamp: new Date()
             };
 
-            const response = await callOpenRouter([systemMessage]);
+            const initialUserMessage: Message = {
+                id: 'init',
+                role: 'user',
+                content: initialReply,
+                timestamp: new Date()
+            };
+
+            const response = await callClaude([systemMessage, initialUserMessage]);
 
             const assistantMessage: Message = {
                 id: Date.now().toString(),
@@ -116,7 +121,7 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
                 timestamp: new Date()
             };
 
-            setMessages([systemMessage, assistantMessage]);
+            setMessages([systemMessage, initialUserMessage, assistantMessage]);
 
             // Save assistant message to Firebase
             if (userId) {
@@ -163,7 +168,7 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
         }
 
         try {
-            const response = await callOpenRouter(updatedMessages);
+            const response = await callClaude(updatedMessages);
 
             const assistantMessage: Message = {
                 id: (Date.now() + 1).toString(),

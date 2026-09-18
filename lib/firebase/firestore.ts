@@ -1,4 +1,3 @@
-// lib/firebase/firestore.ts
 'use client';
 
 import { db } from './firebase';

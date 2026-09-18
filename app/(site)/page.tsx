@@ -204,9 +204,9 @@ export default function HomePage() {
                             </h1>
                             <h2 className="text-lg">
                                 {
-                                    page === "1" ? "While we configure your feed, please interact with content. Commenting and voting will help us understand your preferences better."
+                                    page === "1" ? "While we configure your feed, please interact with content. Commenting and voting will help us better understand your preferences."
                                     : page === "2" ? "Here are some posts you might like based on your preferences. Feel free to interact with them!"
-                                    : "This is your final feed. We've outlined one post for you to respond to"
+                                    : "This is your final feed. We've outlined one random post for you to respond to so we can test our understanding of your preferences"
                                 }
                             </h2>
                         </div>

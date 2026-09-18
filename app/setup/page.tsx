@@ -20,7 +20,7 @@ const header_text = [
     },
     {
         header: "Your profile",
-        subheader: "We're assigning you this anonymous profile"
+        subheader: "This is an anonymous platform. We're assigning you this anonymous profile"
     },
     {
         header: "Your preferences",

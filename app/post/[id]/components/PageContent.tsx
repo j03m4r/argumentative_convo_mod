@@ -298,7 +298,8 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                         ) : (
                             <div className='flex flex-col gap-y-4'>
                                 <h1 className="text-2xl font-bold text-blood-orange">
-                                    Saved reply
+                                    {/* Saved reply */}
+                                    Want to review this before posting?
                                 </h1>
                                 <div className='flex w-full justify-center items-center p-2 flex-col border border-gray-200 rounded-lg'>
                                     <div className="flex w-full gap-x-1 items-center">

@@ -19,6 +19,7 @@ interface ReplyInputProps {
 const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, initialReply, updateReply, postIdx, disagreePostIdx }) => {
     const [replyText, setReplyText] = useState(initialReply || "");
     const [isFocused, setIsFocused] = useState(initialReply && initialReply.trim().length > 0);
+    const [showMinCharWarning, setShowMinCharWarning] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     
     const debouncedReplyText = useDebounce(replyText, 500);
@@ -42,7 +43,12 @@ const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, 
 
     const _handleReply = () => {
         if (replyText.trim()) {
+            if (replyText.trim().length < 10) {
+                setShowMinCharWarning(true);
+                return;
+            }
             handleReply(replyText);
+            setShowMinCharWarning(false);
             // setReplyText('');
         }
     };
@@ -82,11 +88,14 @@ const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, 
 
                 {/* Action buttons - only show when focused or has text */}
                 {(isFocused || replyText.length > 0) && (
-                    <div className='flex items-center justify-end pt-2'>
+                    <div className='flex items-center justify-end pt-2 gap-x-4'>
+                        {showMinCharWarning && (
+                            <p className='text-red-500 text-sm'>Reply must be at least 10 characters in length</p>
+                        )}
                         {/* Reply button */}
                         <button
                             onClick={_handleReply}
-                            disabled={!replyText.trim()}
+                            disabled={!replyText.trim()||(comment.length>0&&postIdx===disagreePostIdx)||(showMinCharWarning&&replyText.trim().length<10)}
                             className='flex gap-x-1 px-4 py-2 border-x border-t border-black cursor-pointer 
                                      disabled:opacity-50 disabled:cursor-not-allowed 
                                      transition-all duration-200 hover:text-blood-orange disabled:hover:text-black'
