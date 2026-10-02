@@ -1,6 +1,7 @@
 "use client";
 import { artificial_intelligence_posts, Post as P, vaccine_posts, posts } from "@/lib/experiment_materials/posts";
-import { getUserData, updatePostVotes, setPage2StartedAt, setPage3StartedAt } from "@/lib/firebase/firestore";
+import { getUserData, updatePostVotes, setPage2StartedAt } from "@/lib/firebase/firestore";
+import { storageIdx } from "@/lib/postIndex";
 import { useUser } from "@/providers/UserProvider";
 import { UserData, PostKey } from "@/types/user";
 import { useEffect, useState, useRef } from "react";
@@ -11,27 +12,35 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { schedulePageTransition } from "@/lib/PageTimer";
 import SkeletonPost from "./components/SkeletonPost";
 import PieChart from "./components/PieChart";
+import FeedModal from "./components/FeedModal";
 
 const pagePostUpvoteCounts = {
-    "1": [21, 23, 41],
-    "2": [34, 21, 10],
-    "3": [18, 26, 14]
+    "1": [21, 23, 41, 34, 18, 27, 15],
+    "2": [18, 26, 14, 21, 10, 33, 24]
 }
 
 const pagePostDownvoteCounts = {
-    "1": [14, 19, 12],
-    "2": [13, 11, 19],
-    "3": [17, 15, 18]
+    "1": [14, 19, 12, 13, 17, 11, 16],
+    "2": [17, 15, 18, 11, 19, 14, 12]
 }
 
 const pagePostCommentCounts = {
-    "1": [3, 6, 7],
-    "2": [7, 4, 2],
-    "3": [4, 5, 7]
+    "1": [3, 6, 7, 4, 2, 5, 6],
+    "2": [4, 5, 7, 3, 6, 2, 5]
+}
+
+const feedModalCopy = {
+    "1": {
+        title: "Welcome to your starting feed",
+        body: "Engaging with these posts is optional, but upvotes and comments help us learn your preferences. Shortly, a button will appear to take you to your final feed, where you'll respond to a post."
+    },
+    "2": {
+        title: "Your final personalized feed",
+        body: "We've randomly selected one post for you to respond to so we can test our understanding of your preferences. Responding to this selected post is required for compensation. Feel free to continue to interact with other content as well."
+    }
 }
 
 export default function HomePage() {
-    const [disagreePage, setDisagreePage] = useState<{ idx: number; type: string; post: P }[]>([]);
     const [agreePage, setAgreePage] = useState<{ idx: number; type: string; post: P }[]>([]);
     const [respondPage, setRespondPage] = useState<{ idx: number; type: string; post: P }[]>([]);
     const [postVotes, setPostVotes] = useState<number[]>(Array(18).fill(0));
@@ -39,6 +48,7 @@ export default function HomePage() {
     const [disagreePostIdx, setDisagreePostIdx] = useState(-1);
     const [isLoading, setIsLoading] = useState(true);
     const [canNavigateNext, setCanNavigateNext] = useState(false);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
     const { userId } = useUser();
     const searchParams = useSearchParams();
     const { replace } = useRouter();
@@ -80,16 +90,9 @@ export default function HomePage() {
                     return;
                 }
 
-                const disagreePagePostKeys = userData.disagreePage;
                 const agreePagePostKeys = userData.agreePage;
                 const respondPagePostKeys = userData.respondPage;
 
-                if (disagreePage.length === 0) {
-                    const disagreePage = disagreePagePostKeys.map((postKey) => {
-                        return { "idx": postKey.idx, "type": postKey.type, "post": retPost(postKey) }
-                    })
-                    setDisagreePage(disagreePage);
-                }
                 if (agreePage.length === 0) {
                     const agreePage = agreePagePostKeys.map((postKey) => {
                         return { "idx": postKey.idx, "type": postKey.type, "post": retPost(postKey) }
@@ -108,6 +111,17 @@ export default function HomePage() {
                 setPostVotes(userData.postVotes);
                 setComments(Object.keys(userData.postComments).map((key: string) => userData.postComments[key]))
 
+                // Show each feed's intro popup until the participant dismisses it.
+                // Only ever open it here: this effect can run twice (Strict Mode), and a
+                // second run must not close a popup the first run just opened.
+                if (page === "1" || page === "2") {
+                    let modalSeen = false;
+                    try {
+                        modalSeen = localStorage.getItem(`feedModalSeen_${userId}_${page}`) === "true";
+                    } catch {}
+                    if (!modalSeen) setModalIsOpen(true);
+                }
+
                 setIsLoading(false);
                 if (page === "1") {
                     await setPage2StartedAt(userId);
@@ -125,20 +139,6 @@ export default function HomePage() {
                 }
 
                 if (page === "2") {
-                    await setPage3StartedAt(userId);
-                    const startedAt = userData.page3StartedAt?.toMillis() ?? Date.now();
-                    const remaining = Math.max(0, 30000 - (Date.now() - startedAt));
-
-                    if (remaining === 0) {
-                        setCanNavigateNext(true);
-                        return;
-                    } else {
-                        setCanNavigateNext(false);
-                    }
-
-                    schedulePageTransition(remaining, () => setCanNavigateNext(true));
-                }
-                if (page === "3") {
                     setCanNavigateNext(false);
                 }
             } catch (error) {
@@ -186,6 +186,14 @@ export default function HomePage() {
 
     return (
         <main className="flex w-full h-screen">
+            {modalIsOpen && (page === "1" || page === "2") && (
+                <FeedModal title={feedModalCopy[page].title} body={feedModalCopy[page].body} onClose={() => {
+                    try {
+                        localStorage.setItem(`feedModalSeen_${userId}_${page}`, "true");
+                    } catch {}
+                    setModalIsOpen(false);
+                }} />
+            )}
             <div className="flex h-full w-full gap-x-4">
                 <div className="flex flex-col w-full bg-cream justify-between items-center h-fit xl:max-w-[900px]">
                     <div className="bg-cream top-0 flex items-center gap-y-1 justify-start w-full py-2 border-b border-black">
@@ -193,62 +201,59 @@ export default function HomePage() {
                         <h2 className="py-2 px-4 font-light cursor-not-allowed opacity-50">Following</h2>
                     </div>
                     <div className="flex bg-cream px-4 w-full border-2 mt-1 sticky top-2 gap-x-4 border-blood-orange shadow-lg z-50">
-                        {page !== "3"&&(
+                        {/* {page === "1"&&(
                             <div className="p-2 flex justify-center items-center min-h-full">
-                                <PieChart numerator={Number(Number.isInteger(Number(page)) ? page : 0)} denominator={3} />
+                                <PieChart numerator={1} denominator={2} />
                             </div>
-                        )}
-                        <div className="flex flex-col py-4 flex-1 gap-y-1 bg-cream">
+                        )} */}
+                        <div className="flex flex-col py-2 flex-1 gap-y-1 bg-cream">
                             <h1 className="text-xl font-bold text-blood-orange">
-                                {page === "1" ? "Personalizing Your Feed..." : page === "2" ? "Personalized Feed #1" : "Personalized Feed #2"}
+                                {page === "1" ? "Personalizing Your Feed..." : "Personalized Feed"}
                             </h1>
                             <h2 className="text-lg">
                                 {
-                                    page === "1" ? "While we configure your feed, please interact with content. Commenting and voting will help us better understand your preferences."
-                                    : page === "2" ? "Here are some posts you might like based on your preferences. Feel free to interact with them!"
+                                    page === "1" ? "While we configure your feed, feel free to interact with content. Commenting and voting will help us better understand your preferences."
                                     : "This is your final feed. We've outlined one random post for you to respond to so we can test our understanding of your preferences"
                                 }
                             </h2>
                         </div>
-                        {canNavigateNext && (
+                        {page==="1" && (
                             <div className="flex justify-center items-center min-h-full">
-                                <button
-                                    onClick={() => {replace(`/?page=${Number(Number.isInteger(Number(page)) ? page : 2)+1}`), setCanNavigateNext(false)}}
-                                    className="bg-blood-orange text-cream font-semibold rounded-lg cursor-pointer px-4 py-2 border border-blood-orange hover:bg-cream hover:border-blood-orange hover:text-blood-orange transition-all ease-in-out duration-200 border-x"
-                                >
-                                    Next Feed
-                                </button>
+                                {canNavigateNext ? (
+                                    <button
+                                        onClick={() => {replace("/?page=2"), setCanNavigateNext(false)}}
+                                        className="bg-blood-orange text-cream font-semibold rounded-lg cursor-pointer px-4 py-4 border border-blood-orange hover:bg-cream hover:border-blood-orange hover:text-blood-orange transition-all ease-in-out duration-200 border-x"
+                                    >
+                                        Next Feed
+                                    </button>
+                                ) : (
+                                    <OrbitProgress color="#ff3f34" size="small" text="" textColor="" />
+                                )}
                             </div>
                         )}
                     </div>
                     <div className="flex flex-col h-full w-full gap-y-2 py-2">
-                        {page === "2" ? agreePage.map((_post, idx) => (
-                                <div key={`randPost_${idx}`} className="flex flex-col w-full gap-y-2">
-                                    <Post setPostVoteVal={handleSetPostVoteVal} comments={comments[_post.type === "aux" ? _post.idx+9 : _post.idx]} disagreePostIdx={disagreePostIdx} randIdx={idx} postType={_post.type} post={_post.post} postIdx={_post.idx} upVoteVal={pagePostUpvoteCounts[page][idx]} downVoteVal={pagePostDownvoteCounts[page][idx]} commentVal={pagePostCommentCounts[page][idx]} voteVal={postVotes[_post.type==="aux" ? _post.idx + 9 : _post.idx]} />
-                                    {idx!==2&&<div className="border-b border-black w-full" />}
-                                </div>
-                            )
-                        ) : page === "3" ? respondPage.map((_post, idx) => {
+                        {page === "2" ? respondPage.map((_post, idx) => {
                             if (_post.idx === disagreePostIdx && _post.type === "opinion") {
                                 return (
                                     <div key={`randPost_${idx}`} className="flex flex-col w-full gap-y-2">
                                         <Tooltip id="replyPost" isOpen style={{ backgroundColor: "#ff3f34", color: "#faf9f6", fontWeight: "700", zIndex: 50 }} />
                                         <Post setPostVoteVal={handleSetPostVoteVal} comments={comments[_post.idx]} disagreePostIdx={disagreePostIdx} randIdx={idx} postType={_post.type} post={_post.post} postIdx={_post.idx} upVoteVal={pagePostUpvoteCounts[page][idx]} downVoteVal={pagePostDownvoteCounts[page][idx]} commentVal={pagePostCommentCounts[page][idx]} voteVal={postVotes[_post.idx]} />
-                                        {idx!==2&&<div className="border-b border-black w-full" />}
+                                        {idx!==respondPage.length-1&&<div className="border-b border-black w-full" />}
                                     </div>
                                 )}
                             else {
                                 return (
                                     <div key={`randPost_${idx}`} className="flex flex-col w-full gap-y-2">
-                                        <Post setPostVoteVal={handleSetPostVoteVal} comments={comments[_post.type === "aux" ? _post.idx+9 : _post.idx]} disagreePostIdx={disagreePostIdx} randIdx={idx} postType={_post.type} post={_post.post} postIdx={_post.idx} upVoteVal={pagePostUpvoteCounts[page][idx]} downVoteVal={pagePostDownvoteCounts[page][idx]} commentVal={pagePostCommentCounts[page][idx]} voteVal={postVotes[_post.type==="aux" ? _post.idx + 9 : _post.idx]} />
-                                        {idx!==2&&<div className="border-b border-black w-full" />}
+                                        <Post setPostVoteVal={handleSetPostVoteVal} comments={comments[storageIdx(_post.type, _post.idx)]} disagreePostIdx={disagreePostIdx} randIdx={idx} postType={_post.type} post={_post.post} postIdx={_post.idx} upVoteVal={pagePostUpvoteCounts[page][idx]} downVoteVal={pagePostDownvoteCounts[page][idx]} commentVal={pagePostCommentCounts[page][idx]} voteVal={postVotes[storageIdx(_post.type, _post.idx)]} />
+                                        {idx!==respondPage.length-1&&<div className="border-b border-black w-full" />}
                                     </div>
                                 )
                             }
-                        }) : disagreePage.map((_post, idx) => (
+                        }) : agreePage.map((_post, idx) => (
                                 <div key={`randPost_${idx}`} className="flex flex-col w-full gap-y-2">
-                                    <Post setPostVoteVal={handleSetPostVoteVal} comments={comments[_post.type === "aux" ? _post.idx+9 : _post.idx]} disagreePostIdx={disagreePostIdx} randIdx={idx} postType={_post.type} post={_post.post} postIdx={_post.idx} upVoteVal={pagePostUpvoteCounts["1"][idx]} downVoteVal={pagePostDownvoteCounts["1"][idx]} commentVal={pagePostCommentCounts["1"][idx]} voteVal={postVotes[_post.type==="aux" ? _post.idx + 9 : _post.idx]} />
-                                    {idx!==2&&<div className="border-b border-black w-full" />}
+                                    <Post setPostVoteVal={handleSetPostVoteVal} comments={comments[storageIdx(_post.type, _post.idx)]} disagreePostIdx={disagreePostIdx} randIdx={idx} postType={_post.type} post={_post.post} postIdx={_post.idx} upVoteVal={pagePostUpvoteCounts["1"][idx]} downVoteVal={pagePostDownvoteCounts["1"][idx]} commentVal={pagePostCommentCounts["1"][idx]} voteVal={postVotes[storageIdx(_post.type, _post.idx)]} />
+                                    {idx!==agreePage.length-1&&<div className="border-b border-black w-full" />}
                                 </div>
                             ))
                         }

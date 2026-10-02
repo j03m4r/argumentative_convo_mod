@@ -3,6 +3,7 @@ import type { FC } from 'react';
 import ChatInterface from "./ChatInterface";
 import ChatMessages from './ChatMessages';
 import { Post } from "@/lib/experiment_materials/posts";
+import { storageIdx } from "@/lib/postIndex";
 import { deliberation_prompt, eristic_prompt, information_seeking_prompt, inquiry_prompt, negotiation_prompt, persuasion_prompt } from "@/lib/experiment_materials/prompts";
 import { updatePostVotes, updatePostComments, updateInitialResponse, getUserData, updateFinishedModerationStatus, updateRevisedResponse, addConversationMessages, updateComment } from "@/lib/firebase/firestore";
 import { useState, useEffect } from "react";
@@ -43,6 +44,8 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
     const [isLoadingMessages, setIsLoadingMessages] = useState(true);
     const [postVote, setPostVote] = useState(0);
     const [disagreePostIdx, setDisagreePostIdx] = useState(-1);
+    // disagreePostIdx indexes opinion posts only, so aux posts must never match it
+    const isDisagreePost = postType !== "aux" && postIdx === disagreePostIdx;
 
     const [finishedModeration, setFinishedModeration] = useState(false);
 
@@ -147,8 +150,8 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                     setRevisedReply(userData.comment.length > 0 ? "" : (userData.revisedResponse || ""));
                     setDisagreePostIdx(userData.disagreePostIdx);
 
-                    setPostVote(userData.postVotes[(postType === "aux" ? postIdx+9 : postIdx)])
-                    setComments(userData.postComments[`${(postType === "aux" ? postIdx+9 : postIdx)}`])
+                    setPostVote(userData.postVotes[storageIdx(postType, postIdx)])
+                    setComments(userData.postComments[`${storageIdx(postType, postIdx)}`])
 
                     if (userData.comment.length) {
                         setComment(userData.comment);
@@ -169,24 +172,24 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
             if (postVote === 1) {
                 setPostVote(0);
                 if (userId) {
-                    updatePostVotes(userId, (postType==="aux" ? postIdx + 9 : postIdx), 0);
+                    updatePostVotes(userId, storageIdx(postType, postIdx), 0);
                 }
             } else {
                 setPostVote(1);
                 if (userId) {
-                    updatePostVotes(userId, (postType==="aux" ? postIdx + 9 : postIdx), 1);
+                    updatePostVotes(userId, storageIdx(postType, postIdx), 1);
                 }
             }
         } else {
             if (postVote === -1) {
                 setPostVote(0);
                 if (userId) {
-                    updatePostVotes(userId, (postType==="aux" ? postIdx + 9 : postIdx), 0);
+                    updatePostVotes(userId, storageIdx(postType, postIdx), 0);
                 }
             } else {
                 setPostVote(-1);
                 if (userId) {
-                    updatePostVotes(userId, (postType==="aux" ? postIdx + 9 : postIdx), -1);
+                    updatePostVotes(userId, storageIdx(postType, postIdx), -1);
                 }
             }
         }
@@ -194,7 +197,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
 
     const handleReply = (reply: string) => {
         if (userId) {
-            if (postIdx===disagreePostIdx) {
+            if (isDisagreePost) {
                 if (finishedModeration) {
                     setComment(reply);
                     updateComment(userId, reply);
@@ -222,7 +225,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                 setComments((prev) => [...prev, reply])
                 setRevisedReply("");
                 setInitialReply("");
-                updatePostComments(userId, (postType==="aux" ? postIdx + 9 : postIdx), reply);
+                updatePostComments(userId, storageIdx(postType, postIdx), reply);
             }
         }
     }
@@ -393,8 +396,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                                 <ReplyInput
                                     post={post}
                                     comment={comment}
-                                    postIdx={postIdx}
-                                    disagreePostIdx={disagreePostIdx}
+                                    isDisagreePost={isDisagreePost}
                                     handleReply={handleReply}
                                     initialReply={finishedModeration ? revisedReply : initialReply}
                                     updateReply={updateReply}
@@ -407,7 +409,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                                         <div className='w-full h-full flex justify-center items-center'>
                                             <OrbitProgress color="#ff3f34" size="medium" text="" textColor="" />
                                         </div>
-                                    ) : comment.length&&disagreePostIdx==postIdx ? (
+                                    ) : comment.length&&isDisagreePost ? (
                                         <div className='flex w-full gap-x-1'>
                                             <div className='flex justify-center'>
                                                 <Image
@@ -491,7 +493,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                                         </>
                                     ) : null }
                                     {
-                                        post.comments&&disagreePostIdx!==postIdx&&post.comments.map((_comment, idx) => (
+                                        post.comments&&!isDisagreePost&&post.comments.map((_comment, idx) => (
                                             <div key={`_embedded_comment_${idx}`} className='flex w-full gap-x-1'>
                                                 <div className='flex justify-center'>
                                                     <Image

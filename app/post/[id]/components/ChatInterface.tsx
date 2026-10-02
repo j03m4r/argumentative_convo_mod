@@ -14,6 +14,10 @@ interface Message {
     timestamp: Date;
 }
 
+// The initial reply is wrapped in a tag for the model; hide the tag from participants
+export const displayContent = (content: string) =>
+    content.replace(/<\/?users_initial_reply_to_OP>\n?/g, "").trim();
+
 interface ChatInterfaceProps {
     userPfp: string;
     initialSystemPrompt?: string|null;
@@ -108,7 +112,7 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
             const initialUserMessage: Message = {
                 id: 'init',
                 role: 'user',
-                content: initialReply,
+                content: `<users_initial_reply_to_OP>\n${initialReply}\n</users_initial_reply_to_OP>`,
                 timestamp: new Date()
             };
 
@@ -251,7 +255,7 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
                                     : 'bg-gray-100 text-black border border-gray-200'
                                     }`}>
                                     <p className="whitespace-pre-wrap leading-relaxed">
-                                        {message.content}
+                                        {displayContent(message.content)}
                                     </p>
                                 </div>
                                 <span className="text-sm text-gray-400 mt-1">

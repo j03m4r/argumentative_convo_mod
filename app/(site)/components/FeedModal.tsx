@@ -1,0 +1,31 @@
+"use client";
+
+import type { FC } from 'react';
+
+interface FeedModalProps {
+    title: string;
+    body: string;
+    onClose: () => void;
+}
+
+// Visually matches the modal in app/post/[id]/components/PageContent.tsx.
+// z-index is raised above the home page's sticky banner and reply tooltip (both z-50).
+const FeedModal: FC<FeedModalProps> = ({ title, body, onClose }) => {
+    return (
+        <>
+            <div className='fixed z-[60] bg-cover bg-cream opacity-75 blur-xl w-screen h-screen left-0 top-0 transition-colors duration-200 ease-in-out' onClick={onClose}>
+            </div>
+            <div className='z-[70] fixed blur-none opacity-100 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-cream p-16 rounded-xl shadow-xl border text-xl'>
+                <svg onClick={onClose} xmlns="http://www.w3.org/2000/svg" width={24} className='fill-black hover:fill-blood-orange cursor-pointer absolute right-4 top-4 transition-colors duration-200 ease-in-out' viewBox="0 0 640 640"><path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z"/></svg>
+                <div className='flex flex-col gap-y-4'>
+                    <h1 className="text-2xl font-bold text-blood-orange">
+                        {title}
+                    </h1>
+                    <div className='text-xl'>{body}</div>
+                </div>
+            </div>
+        </>
+    );
+}
+
+export default FeedModal;

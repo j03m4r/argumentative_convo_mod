@@ -5,6 +5,7 @@ import type { FC } from 'react';
 import { Post } from '@/lib/experiment_materials/posts';
 import { addConversationMessage } from '@/lib/firebase/firestore';
 import { Tooltip } from 'react-tooltip'
+import { displayContent } from './ChatInterface';
 
 interface Message {
     id: string;
@@ -43,7 +44,7 @@ const ChatMessages: FC<ChatMessagesProps> = ({
                                 : 'bg-gray-100 text-black border border-gray-200'
                                 }`}>
                                 <p className="whitespace-pre-wrap leading-relaxed">
-                                    {message.content}
+                                    {displayContent(message.content)}
                                 </p>
                             </div>
                             <span className="text-sm text-gray-400 mt-1">

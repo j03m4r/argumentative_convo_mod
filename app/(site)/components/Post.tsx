@@ -2,6 +2,7 @@
 
 import { useState, type FC } from 'react';
 import { Post as P } from "@/lib/experiment_materials/posts";
+import { storageIdx } from "@/lib/postIndex";
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -50,14 +51,14 @@ const Post: FC<PostProps> = ({ postType, disagreePostIdx, postIdx, post, randIdx
                 <div className="flex items-center justify-center gap-x-2">
                     <button 
                         className={`text-sm flex items-center justify-center gap-x-1 py-2 px-4 rounded-lg hover:bg-blood-orange/5 cursor-pointer ${voteVal === 1 ? "text-blood-orange" : ""}`}
-                        onClick={() => setPostVoteVal(postType === "aux" ? postIdx+9 : postIdx, voteVal === 1 ? 0 : 1)}
+                        onClick={() => setPostVoteVal(storageIdx(postType, postIdx), voteVal === 1 ? 0 : 1)}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
                         {voteVal === 1 ? (disagreePostIdx===postIdx&&postType!=="aux" ? 0 : upVoteVal)+1 : (disagreePostIdx===postIdx&&postType!=="aux" ? 0 : upVoteVal)}
                     </button>
                     <button 
                         className={`text-sm flex items-center justify-center gap-x-1 py-2 px-4 rounded-lg hover:bg-blood-orange/5 cursor-pointer ${voteVal === -1 ? "text-blood-orange" : ""}`}
-                        onClick={() => setPostVoteVal(postType === "aux" ? postIdx+9 : postIdx, voteVal === -1 ? 0 : -1)}
+                        onClick={() => setPostVoteVal(storageIdx(postType, postIdx), voteVal === -1 ? 0 : -1)}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width={18} className='rotate-180 fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
                         {voteVal === -1 ? (disagreePostIdx===postIdx&&postType!=="aux" ? 0 : downVoteVal)+1 : (disagreePostIdx===postIdx&&postType!=="aux" ? 0 : downVoteVal)}

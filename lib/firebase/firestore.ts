@@ -11,6 +11,34 @@ function shuffleArray(array: any) {
     return array;
 }
 
+// Feed 1 (agreePage): complement of the target post + a randomly chosen side of every other topic.
+// Feed 2 (respondPage): the target post (placed in the top 3) + the opposite side of every other topic.
+// Each feed also gets one AI aux post (idx 0 or 2) and one vaccine aux post (idx 4 or 6).
+export function buildFeeds(ratings: number[], disagreePostIdx: number) {
+    const disagreeTopic = Math.floor(disagreePostIdx / 2);
+    let agreePage = [{ "type": "opinion", "idx": disagreePostIdx ^ 1 }];
+    let respondPage: { type: string; idx: number }[] = [];
+
+    for (let t = 0; t < ratings.length; t++) {
+        if (t === disagreeTopic) continue;
+        const page1Idx = t*2 + (Math.random() < 0.5 ? 0 : 1);
+        agreePage.push({ "type": "opinion", "idx": page1Idx });
+        respondPage.push({ "type": "opinion", "idx": page1Idx ^ 1 });
+    }
+
+    const aiAuxIdxs = shuffleArray([0, 2]);
+    const vaccineAuxIdxs = shuffleArray([4, 6]);
+    agreePage.push({ "type": "aux", "idx": aiAuxIdxs[0] }, { "type": "aux", "idx": vaccineAuxIdxs[0] });
+    respondPage.push({ "type": "aux", "idx": aiAuxIdxs[1] }, { "type": "aux", "idx": vaccineAuxIdxs[1] });
+
+    agreePage = shuffleArray(agreePage);
+    respondPage = shuffleArray(respondPage);
+    // Keep the target post within the top 3 so participants can find it without scrolling
+    respondPage.splice(Math.floor(Math.random() * 3), 0, { "type": "opinion", "idx": disagreePostIdx });
+
+    return { agreePage, respondPage };
+}
+
 export async function setUserArgumentationType(userId: string, argumentationType: string) {
     const docRef = doc(db, 'users', userId);
     const existing = await getDoc(docRef);
@@ -38,8 +66,6 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
     const docRef = doc(db, 'users', userId);
     const polarizedPosts: number[] = [];
     let disagreePostIdx = -1;
-    const usedAux = new Set();
-    const usedOpinionIdxs = new Set();
 
     for (let i = 0; i < ratings.length; i++) {
         const rating = ratings[i];
@@ -60,8 +86,6 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
         disagreePostIdx = disagreePostIdx*2 + (ratings[disagreePostIdx] <= 2 ? 0 : 1);
     }
 
-    usedOpinionIdxs.add(disagreePostIdx);
-
     // const auxPostIdx1 = Math.floor(Math.random() * 4);
     // const auxPostIdx2 = Math.floor(Math.random() * 4);
     // let _posts = ["ai", "vaccine", "disagree"];
@@ -71,72 +95,7 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
     // const randArgumentationIdx = Math.floor(Math.random() * argumentation_types.length);
     // const argumentationType = argumentation_types[randArgumentationIdx];
 
-    let disagreePage = [];
-    let randAuxPostIdx = Math.floor(Math.random() * 4)*2;
-    usedAux.add(randAuxPostIdx);
-    disagreePage.push({ "type": "aux", "idx": randAuxPostIdx });
-
-    let agreePage = [];
-    let respondPage = [];
-    
-    let randOpinionIdx = null;
-    while (disagreePage.length < 3) {
-        randOpinionIdx = Math.floor(Math.random() * ratings.length);
-        if (ratings[randOpinionIdx] <= 2) {
-            randOpinionIdx *= 2;
-        } else {
-            randOpinionIdx = (randOpinionIdx*2) + 1;
-        }
-
-        if (!usedOpinionIdxs.has(randOpinionIdx)) {
-            disagreePage.push({ "type": "opinion", "idx": randOpinionIdx });
-            usedOpinionIdxs.add(randOpinionIdx);
-        }
-    }
-
-    randAuxPostIdx = Math.floor(Math.random() * 4)*2;
-    while (usedAux.has(randAuxPostIdx)) {
-        randAuxPostIdx = Math.floor(Math.random() * 4)*2;
-    }
-    usedAux.add(randAuxPostIdx);
-    agreePage.push({ "type": "aux", "idx": randAuxPostIdx });
-    
-    while (agreePage.length < 3) {
-        randOpinionIdx = Math.floor(Math.random() * ratings.length);
-        if (ratings[randOpinionIdx] <= 2) {
-            randOpinionIdx = (randOpinionIdx*2) + 1;
-        } else {
-            randOpinionIdx *= 2;
-        }
-
-        if (!usedOpinionIdxs.has(randOpinionIdx)) {
-            agreePage.push({ "type": "opinion", "idx": randOpinionIdx });
-            usedOpinionIdxs.add(randOpinionIdx);
-        }
-    }
-
-    randAuxPostIdx = Math.floor(Math.random() * 4)*2;
-    while (usedAux.has(randAuxPostIdx)) {
-        randAuxPostIdx = Math.floor(Math.random() * 4)*2;
-    }
-    usedAux.add(randAuxPostIdx);
-    respondPage.push({ "type": "aux", "idx": randAuxPostIdx });
-    
-    while (respondPage.length < 2) {
-        randOpinionIdx = Math.floor(Math.random() * ratings.length);
-        randOpinionIdx = (randOpinionIdx*2) + Math.floor(Math.random() * 2);
-
-        if (!usedOpinionIdxs.has(randOpinionIdx)) {
-            respondPage.push({ "type": "opinion", "idx": randOpinionIdx });
-            usedOpinionIdxs.add(randOpinionIdx);
-        }
-    }
-
-    respondPage.push({ "type": "opinion", "idx": disagreePostIdx });
-
-    disagreePage = shuffleArray(disagreePage);
-    agreePage = shuffleArray(agreePage);
-    respondPage = shuffleArray(respondPage);
+    const { agreePage, respondPage } = buildFeeds(ratings, disagreePostIdx);
 
     const postVotes = new Array(ratings.length*2 + 8).fill(0);
     const postComments: any = {}
@@ -148,7 +107,6 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
         hasCompletedInitialRatings: true,
         initialRatings: ratings,
         disagreePostIdx: disagreePostIdx,
-        disagreePage: disagreePage,
         agreePage: agreePage,
         respondPage: respondPage,
         postVotes: postVotes,
@@ -160,7 +118,6 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
         finishedModeration: false,
         hasUpvoted: null,
         msToPage2: 30000,
-        msToPage3: 30000,
         createdAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
     });
@@ -284,16 +241,6 @@ export async function setPage2StartedAt(userId: string) {
     if (userDoc.data()?.page2StartedAt) return; // only set once, ever
     await updateDoc(docRef, {
         page2StartedAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
-    });
-}
-
-export async function setPage3StartedAt(userId: string) {
-    const docRef = doc(db, 'users', userId);
-    const userDoc = await getDoc(docRef);
-    if (userDoc.data()?.page3StartedAt) return;
-    await updateDoc(docRef, {
-        page3StartedAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
     });
 }

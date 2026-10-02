@@ -9,13 +9,11 @@ export type UserData = {
   hasCompletedInitialRatings: boolean;
   initialRatings: number[];
   disagreePostIdx: number;
-  disagreePage: PostKey[];
   agreePage: PostKey[];
   respondPage: PostKey[];
   postVotes: number[];
   postComments: Record<string, string[]>;
   page2StartedAt: Timestamp|null,
-  page3StartedAt: Timestamp|null,
   comment: string;
   initialResponse: string;
   revisedResponse: string;

@@ -105,7 +105,10 @@ export default function SetupPage() {
                                 <li>2. Explore and interact with multiple feeds</li>
                                 <li>3. Respond to a post on the final feed</li>
                             </ol> 
-                            <b className="text-sm font-light">* Note that some extra features will be unavailable or unclickable</b>
+                            {/* <div className="pb-4">
+                                <b className="text-sm font-light">* Note that some extra features will be unavailable or unclickable</b>
+                            </div> */}
+                            <b className="font-bold text-red-500">This study involves controversial and potentially offensive content. If you are uncomfortable with this, feel free to discontinue the study.</b>
                         </div>
                     ) : (header_text[phase].subheader)}
                 </h2>

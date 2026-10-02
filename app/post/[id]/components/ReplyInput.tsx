@@ -12,11 +12,10 @@ interface ReplyInputProps {
     initialReply: string;
     updateReply: (reply: string) => void;
     comment: string;
-    postIdx: number;
-    disagreePostIdx: number;
+    isDisagreePost: boolean;
 }
 
-const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, initialReply, updateReply, postIdx, disagreePostIdx }) => {
+const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, initialReply, updateReply, isDisagreePost }) => {
     const [replyText, setReplyText] = useState(initialReply || "");
     const [isFocused, setIsFocused] = useState(initialReply && initialReply.trim().length > 0);
     const [showMinCharWarning, setShowMinCharWarning] = useState(false);
@@ -75,14 +74,14 @@ const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, 
 
                 {/* Textarea */}
                 <textarea
-                    disabled={comment.length>0&&postIdx===disagreePostIdx}
+                    disabled={comment.length>0&&isDisagreePost}
                     ref={textareaRef}
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
                     placeholder='Post your reply'
-                    className={`w-full resize-none outline-none text-lg min-h-[60px] max-h-[400px] overflow-y-auto placeholder:text-gray-400 ${comment!==""&&disagreePostIdx===postIdx&&"cursor-not-allowed"}`}
+                    className={`w-full resize-none outline-none text-lg min-h-[60px] max-h-[400px] overflow-y-auto placeholder:text-gray-400 ${comment!==""&&isDisagreePost&&"cursor-not-allowed"}`}
                     rows={1}
                 />
 
@@ -95,7 +94,7 @@ const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, 
                         {/* Reply button */}
                         <button
                             onClick={_handleReply}
-                            disabled={!replyText.trim()||(comment.length>0&&postIdx===disagreePostIdx)||(showMinCharWarning&&replyText.trim().length<10)}
+                            disabled={!replyText.trim()||(comment.length>0&&isDisagreePost)||(showMinCharWarning&&replyText.trim().length<10)}
                             className='flex gap-x-1 px-4 py-2 border-x border-t border-black cursor-pointer 
                                      disabled:opacity-50 disabled:cursor-not-allowed 
                                      transition-all duration-200 hover:text-blood-orange disabled:hover:text-black'
