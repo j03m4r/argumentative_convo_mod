@@ -108,7 +108,7 @@ export default function SetupPage() {
                             {/* <div className="pb-4">
                                 <b className="text-sm font-light">* Note that some extra features will be unavailable or unclickable</b>
                             </div> */}
-                            <b className="font-bold text-red-500">This study involves controversial and potentially offensive content. If you are uncomfortable with this, feel free to discontinue the study.</b>
+                            <b className="font-bold text-red-500">This study involves controversial and potentially offensive content.</b>
                         </div>
                     ) : (header_text[phase].subheader)}
                 </h2>

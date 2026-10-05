@@ -222,13 +222,13 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
     };
 
     return (
-        <div className="flex flex-col h-full w-full" data-tooltip-id="moderatorMessageCount" data-tooltip-content="Enter at least 3 messages" data-tooltip-place="right">
+        <div className="flex flex-col h-full w-full" data-tooltip-id="moderatorMessageCount" data-tooltip-content="Enter at least 3 messages" data-tooltip-place="left">
             <Tooltip id="moderatorMessageCount" isOpen style={{ backgroundColor: "#ff3f34", color: "#faf9f6", fontWeight: "700", zIndex: 50 }} />
-            <div className={`flex w-full border-2 mt-1 border-blood-orange shadow-lg ${messages.length>2&&"hidden"}`}>
+            <div className='flex w-full shrink-0 border-2 mt-1 mx-1 border-blood-orange shadow-lg'>
                 <div className='p-4 flex justify-center items-center'>
                     <svg xmlns="http://www.w3.org/2000/svg" width={48} className='fill-blood-orange' viewBox="0 0 640 640"><path d="M320 64C334.7 64 348.2 72.1 355.2 85L571.2 485C577.9 497.4 577.6 512.4 570.4 524.5C563.2 536.6 550.1 544 536 544L104 544C89.9 544 76.8 536.6 69.6 524.5C62.4 512.4 62.1 497.4 68.8 485L284.8 85C291.8 72.1 305.3 64 320 64zM320 416C302.3 416 288 430.3 288 448C288 465.7 302.3 480 320 480C337.7 480 352 465.7 352 448C352 430.3 337.7 416 320 416zM320 224C301.8 224 287.3 239.5 288.6 257.7L296 361.7C296.9 374.2 307.4 384 319.9 384C332.5 384 342.9 374.3 343.8 361.7L351.2 257.7C352.5 239.5 338.1 224 319.8 224z" /></svg>
                 </div>
-                <div className="flex flex-col py-4 flex-1">
+                <div className="flex flex-col py-2 flex-1">
                     <h1 className="text-xl font-bold text-blood-orange">
                         Hold on...
                     </h1>
@@ -351,7 +351,7 @@ const ChatInterface: FC<ChatInterfaceProps> = ({
                         className={`flex border-x border-t px-16 py-2 font-bold justify-center items-center border-black transition-all duration-200 ease-in-out
                         ${messages.length >= 8 ? "hover:bg-cream hover:text-blood-orange bg-blood-orange text-cream cursor-pointer " : "bg-cream text-blood-orange border-blood-orange cursor-not-allowed opacity-50"}`}
                     >
-                        Click to finish chatting; return to post
+                        Click to finish chatting
                     </button>
                 )}
             </div>

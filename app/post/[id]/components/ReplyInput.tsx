@@ -13,9 +13,11 @@ interface ReplyInputProps {
     updateReply: (reply: string) => void;
     comment: string;
     isDisagreePost: boolean;
+    disabled?: boolean;
 }
 
-const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, initialReply, updateReply, isDisagreePost }) => {
+const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, initialReply, updateReply, isDisagreePost, disabled = false }) => {
+    const isLocked = disabled || (comment.length>0&&isDisagreePost);
     const [replyText, setReplyText] = useState(initialReply || "");
     const [isFocused, setIsFocused] = useState(initialReply && initialReply.trim().length > 0);
     const [showMinCharWarning, setShowMinCharWarning] = useState(false);
@@ -74,19 +76,20 @@ const ReplyInput: FC<ReplyInputProps> = ({ comment, post, userPfp, handleReply, 
 
                 {/* Textarea */}
                 <textarea
-                    disabled={comment.length>0&&isDisagreePost}
+                    disabled={isLocked}
                     ref={textareaRef}
-                    value={replyText}
+                    // Hide (but keep) the reply while it's locked, so the debounced save doesn't wipe it
+                    value={disabled ? "" : replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
                     placeholder='Post your reply'
-                    className={`w-full resize-none outline-none text-lg min-h-[60px] max-h-[400px] overflow-y-auto placeholder:text-gray-400 ${comment!==""&&isDisagreePost&&"cursor-not-allowed"}`}
+                    className={`w-full resize-none outline-none text-lg min-h-[60px] max-h-[400px] overflow-y-auto placeholder:text-gray-400 ${isLocked&&"cursor-not-allowed"}`}
                     rows={1}
                 />
 
                 {/* Action buttons - only show when focused or has text */}
-                {(isFocused || replyText.length > 0) && (
+                {!disabled && (isFocused || replyText.length > 0) && (
                     <div className='flex items-center justify-end pt-2 gap-x-4'>
                         {showMinCharWarning && (
                             <p className='text-red-500 text-sm'>Reply must be at least 10 characters in length</p>

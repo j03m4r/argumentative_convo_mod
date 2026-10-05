@@ -218,7 +218,6 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                         setTimeout(function() {
                             setIsModeration(true);
                             setIsLoadingModeration(false);
-                            setModalIsOpen(true);
                         }, 2000);
                     }
                 }
@@ -274,24 +273,16 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
         <div className='flex w-full h-screen'>
             {modalIsOpen&&(
                 <>
-                    <div className='fixed z-[60] bg-cover bg-cream opacity-75 blur-xl w-screen h-screen left-0 top-0 transition-colors duration-200 ease-in-out' onClick={() => setModalIsOpen(false)}>
+                    <div className='fixed z-20 bg-cover bg-cream opacity-75 blur-xl w-screen h-screen left-0 top-0 transition-colors duration-200 ease-in-out' onClick={() => setModalIsOpen(false)}>
                     </div>
-                    <div className='z-[70] absolute blur-none opacity-100 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-cream p-16 rounded-xl shadow-xl border text-xl'>
+                    <div className='z-50 absolute blur-none opacity-100 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-cream p-16 rounded-xl shadow-xl border text-xl'>
                         <svg onClick={() => setModalIsOpen(false)} xmlns="http://www.w3.org/2000/svg" width={24} className='fill-black hover:fill-blood-orange cursor-pointer absolute right-4 top-4 transition-colors duration-200 ease-in-out' viewBox="0 0 640 640"><path d="M183.1 137.4C170.6 124.9 150.3 124.9 137.8 137.4C125.3 149.9 125.3 170.2 137.8 182.7L275.2 320L137.9 457.4C125.4 469.9 125.4 490.2 137.9 502.7C150.4 515.2 170.7 515.2 183.2 502.7L320.5 365.3L457.9 502.6C470.4 515.1 490.7 515.1 503.2 502.6C515.7 490.1 515.7 469.8 503.2 457.3L365.8 320L503.1 182.6C515.6 170.1 515.6 149.8 503.1 137.3C490.6 124.8 470.3 124.8 457.8 137.3L320.5 274.7L183.1 137.4z"/></svg>
-                        {isModeration ? (
-                            <div className='flex flex-col gap-y-4 max-w-xl'>
-                                <h1 className="text-2xl font-bold text-blood-orange">
-                                    Hold on...
-                                </h1>
-                                <div className='text-xl'>Before you can finish replying, our AI chatbot would like to have a conversation with you.</div>
-                                <div className='text-xl'>Send <span className='font-bold'>at least 3 messages</span> to the chatbot, then click <span className='font-semibold'>&quot;Click to finish chatting&quot;</span> to finish replying.</div>
-                            </div>
-                        ) : comment ? (
+                        {comment ? (
                            <div className='flex flex-col gap-y-4'>
                                 <h1 className="text-2xl font-bold text-blood-orange">
                                     Tasks complete!
                                 </h1>
-                                <div className='text-xl'>Close this textbox, copy the completion code, and return to the Qualtrics survey</div>
+                                <div className='text-xl'>Close this textbox, copy the completion code, and return to the survey</div>
                             </div> 
                         ) : prompt === "control" ? (
                             <div className='flex flex-col gap-y-4'>
@@ -305,7 +296,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                                     </div>
                                     <p className='w-full'>{initialReply}</p>
                                 </div>
-                                <div className='text-xl'>You can close this textbox and finish responding to the post.</div>
+                                <div className='text-xl'>Close this textbox and finish responding to the post.</div>
                             </div>
                         ) : (
                             <div className='flex flex-col gap-y-4'>
@@ -320,7 +311,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                                     </div>
                                     <p className='w-full'>{initialReply}</p>
                                 </div>
-                                <div className='text-xl'>Now that you have finished conversing with our AI chatbot, you can close this textbox and finish responding to the post.</div>
+                                <div className='text-xl'>Now that you have finished conversing with our AI chatbot, close this textbox and finish responding to the post.</div>
                             </div>
                         )}
                     </div>
@@ -385,71 +376,41 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
 
                 {/* Flexible content area */}
                 <div className="flex-1 min-h-0 flex flex-col">
-                    <div className='relative flex w-full items-center'>
-                        <button onClick={() => updateReply(initialReply)} className={`${(!finishedModeration || revisedReply || comment.length) && 'hidden'} gap-x-2 absolute right-4 top-4 rounded-md bg-blood-orange text-cream px-2 py-1 hover:bg-blood-orange/80 cursor-pointer transition-colors duration-200 ease-in-out flex justify-center items-center`}>
-                            <svg xmlns="http://www.w3.org/2000/svg" width={24} className='fill-cream' viewBox="0 0 640 640"><path d="M96 128C60.7 128 32 156.7 32 192L32 448C32 483.3 60.7 512 96 512L544 512C579.3 512 608 483.3 608 448L608 192C608 156.7 579.3 128 544 128L96 128zM112 192L144 192C152.8 192 160 199.2 160 208L160 240C160 248.8 152.8 256 144 256L112 256C103.2 256 96 248.8 96 240L96 208C96 199.2 103.2 192 112 192zM96 304C96 295.2 103.2 288 112 288L144 288C152.8 288 160 295.2 160 304L160 336C160 344.8 152.8 352 144 352L112 352C103.2 352 96 344.8 96 336L96 304zM208 192L240 192C248.8 192 256 199.2 256 208L256 240C256 248.8 248.8 256 240 256L208 256C199.2 256 192 248.8 192 240L192 208C192 199.2 199.2 192 208 192zM192 304C192 295.2 199.2 288 208 288L240 288C248.8 288 256 295.2 256 304L256 336C256 344.8 248.8 352 240 352L208 352C199.2 352 192 344.8 192 336L192 304zM208 384L432 384C440.8 384 448 391.2 448 400L448 432C448 440.8 440.8 448 432 448L208 448C199.2 448 192 440.8 192 432L192 400C192 391.2 199.2 384 208 384zM288 208C288 199.2 295.2 192 304 192L336 192C344.8 192 352 199.2 352 208L352 240C352 248.8 344.8 256 336 256L304 256C295.2 256 288 248.8 288 240L288 208zM304 288L336 288C344.8 288 352 295.2 352 304L352 336C352 344.8 344.8 352 336 352L304 352C295.2 352 288 344.8 288 336L288 304C288 295.2 295.2 288 304 288zM384 208C384 199.2 391.2 192 400 192L432 192C440.8 192 448 199.2 448 208L448 240C448 248.8 440.8 256 432 256L400 256C391.2 256 384 248.8 384 240L384 208zM400 288L432 288C440.8 288 448 295.2 448 304L448 336C448 344.8 440.8 352 432 352L400 352C391.2 352 384 344.8 384 336L384 304C384 295.2 391.2 288 400 288zM480 208C480 199.2 487.2 192 496 192L528 192C536.8 192 544 199.2 544 208L544 240C544 248.8 536.8 256 528 256L496 256C487.2 256 480 248.8 480 240L480 208zM496 288L528 288C536.8 288 544 295.2 544 304L544 336C544 344.8 536.8 352 528 352L496 352C487.2 352 480 344.8 480 336L480 304C480 295.2 487.2 288 496 288z" /></svg>
-                            <p className='font-semibold text-sm'>Click to edit initial reply</p>
-                        </button>
-                        <ReplyInput
+                    {isModeration ? (
+                        <ChatInterface
+                            userPfp="/images/avatar_mosaic.png"
+                            initialSystemPrompt={prompt}
                             post={post}
-                            comment={comment}
-                            isDisagreePost={isDisagreePost}
-                            handleReply={handleReply}
-                            initialReply={finishedModeration ? revisedReply : initialReply}
-                            updateReply={updateReply}
-                            disabled={isModeration}
-                            userPfp="/images/avatar_mosaic.png" 
+                            initialReply={initialReply}
+                            handleFinishModeration={handleFinishModeration}
+                            userId={userId}
+                            savedMessages={savedMessages}
                         />
-                    </div>
-                    <div className="flex-1 flex justify-center items-center">
-                        <div className='flex flex-col h-full w-full items-center py-4 justify-start gap-y-4'>
-                            {isLoadingModeration ? (
-                                <div className='w-full h-full flex justify-center items-center'>
-                                    <OrbitProgress color="#ff3f34" size="medium" text="" textColor="" />
-                                </div>
-                            ) : comment.length&&isDisagreePost ? (
-                                <div className='flex w-full gap-x-1'>
-                                    <div className='flex justify-center'>
-                                        <Image
-                                            src="/images/avatar_mosaic.png"
-                                            width={50}
-                                            height={50}
-                                            alt="Wave profile picture"
-                                            className="w-3/4 h-fit rounded-full"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col w-full gap-y-1">
-                                        <div className="flex w-full flex-col">
-                                            <div className="flex w-full gap-x-1 items-center">
-                                                <h2 className="cursor-not-allowed text-blood-orange text-sm">FogMessier63</h2>
-                                                <h2 className="text-sm ml-1 font-light">@FogMessier63</h2>
-                                                <p className='font-light'>•</p>
-                                                <p className='text-sm font-light'>Now</p>
-                                            </div>
+                    ) : (
+                        <>
+                            <div className='relative flex w-full items-center'>
+                                <button onClick={() => updateReply(initialReply)} className={`${(!finishedModeration || revisedReply || comment.length) && 'hidden'} gap-x-2 absolute right-4 top-4 rounded-md bg-blood-orange text-cream px-2 py-1 hover:bg-blood-orange/80 cursor-pointer transition-colors duration-200 ease-in-out flex justify-center items-center`}>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width={24} className='fill-cream' viewBox="0 0 640 640"><path d="M96 128C60.7 128 32 156.7 32 192L32 448C32 483.3 60.7 512 96 512L544 512C579.3 512 608 483.3 608 448L608 192C608 156.7 579.3 128 544 128L96 128zM112 192L144 192C152.8 192 160 199.2 160 208L160 240C160 248.8 152.8 256 144 256L112 256C103.2 256 96 248.8 96 240L96 208C96 199.2 103.2 192 112 192zM96 304C96 295.2 103.2 288 112 288L144 288C152.8 288 160 295.2 160 304L160 336C160 344.8 152.8 352 144 352L112 352C103.2 352 96 344.8 96 336L96 304zM208 192L240 192C248.8 192 256 199.2 256 208L256 240C256 248.8 248.8 256 240 256L208 256C199.2 256 192 248.8 192 240L192 208C192 199.2 199.2 192 208 192zM192 304C192 295.2 199.2 288 208 288L240 288C248.8 288 256 295.2 256 304L256 336C256 344.8 248.8 352 240 352L208 352C199.2 352 192 344.8 192 336L192 304zM208 384L432 384C440.8 384 448 391.2 448 400L448 432C448 440.8 440.8 448 432 448L208 448C199.2 448 192 440.8 192 432L192 400C192 391.2 199.2 384 208 384zM288 208C288 199.2 295.2 192 304 192L336 192C344.8 192 352 199.2 352 208L352 240C352 248.8 344.8 256 336 256L304 256C295.2 256 288 248.8 288 240L288 208zM304 288L336 288C344.8 288 352 295.2 352 304L352 336C352 344.8 344.8 352 336 352L304 352C295.2 352 288 344.8 288 336L288 304C288 295.2 295.2 288 304 288zM384 208C384 199.2 391.2 192 400 192L432 192C440.8 192 448 199.2 448 208L448 240C448 248.8 440.8 256 432 256L400 256C391.2 256 384 248.8 384 240L384 208zM400 288L432 288C440.8 288 448 295.2 448 304L448 336C448 344.8 440.8 352 432 352L400 352C391.2 352 384 344.8 384 336L384 304C384 295.2 391.2 288 400 288zM480 208C480 199.2 487.2 192 496 192L528 192C536.8 192 544 199.2 544 208L544 240C544 248.8 536.8 256 528 256L496 256C487.2 256 480 248.8 480 240L480 208zM496 288L528 288C536.8 288 544 295.2 544 304L544 336C544 344.8 536.8 352 528 352L496 352C487.2 352 480 344.8 480 336L480 304C480 295.2 487.2 288 496 288z" /></svg>
+                                    <p className='font-semibold text-sm'>Click to edit initial reply</p>
+                                </button>
+                                <ReplyInput
+                                    post={post}
+                                    comment={comment}
+                                    isDisagreePost={isDisagreePost}
+                                    handleReply={handleReply}
+                                    initialReply={finishedModeration ? revisedReply : initialReply}
+                                    updateReply={updateReply}
+                                    userPfp="/images/avatar_mosaic.png" 
+                                />
+                            </div>
+                            <div className="flex-1 flex justify-center items-center">
+                                <div className='flex flex-col h-full w-full items-center py-4 justify-start gap-y-4'>
+                                    {isLoadingModeration ? (
+                                        <div className='w-full h-full flex justify-center items-center'>
+                                            <OrbitProgress color="#ff3f34" size="medium" text="" textColor="" />
                                         </div>
-                                        <p className='font-normal text-md'>{comment}</p>
-                                        <div className='w-full flex justify-between items-center'>
-                                            <div className="flex items-center justify-center gap-x-8 py-2">
-                                                <div className="cursor-not-allowed text-sm flex items-center justify-center gap-x-1">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
-                                                    0
-                                                </div>
-                                                <div className={`cursor-not-allowed text-sm flex items-center justify-center gap-x-1`}>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width={18} className='rotate-180 fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
-                                                    0
-                                                </div>
-                                                <div className={`cursor-not-allowed text-sm flex items-center justify-center gap-x-1`}>
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M576 304C576 436.5 461.4 544 320 544C282.9 544 247.7 536.6 215.9 523.3L97.5 574.1C88.1 578.1 77.3 575.8 70.4 568.3C63.5 560.8 62 549.8 66.8 540.8L115.6 448.6C83.2 408.3 64 358.3 64 304C64 171.5 178.6 64 320 64C461.4 64 576 171.5 576 304z" /></svg>
-                                                    0
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ) : comments.length ? (
-                                <>
-                                    {comments.map((_comment, _commentIdx) => (
-                                        <div key={`_comment_${_commentIdx}`} className='flex w-full gap-x-1'>
+                                    ) : comment.length&&isDisagreePost ? (
+                                        <div className='flex w-full gap-x-1'>
                                             <div className='flex justify-center'>
                                                 <Image
                                                     src="/images/avatar_mosaic.png"
@@ -468,7 +429,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                                                         <p className='text-sm font-light'>Now</p>
                                                     </div>
                                                 </div>
-                                                <p className='font-normal text-md'>{_comment}</p>
+                                                <p className='font-normal text-md'>{comment}</p>
                                                 <div className='w-full flex justify-between items-center'>
                                                     <div className="flex items-center justify-center gap-x-8 py-2">
                                                         <div className="cursor-not-allowed text-sm flex items-center justify-center gap-x-1">
@@ -487,58 +448,101 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                                                 </div>
                                             </div>
                                         </div>
-                                    ))}
-                                </>
-                            ) : null }
-                            {
-                                post.comments&&!isDisagreePost&&post.comments.map((_comment, idx) => (
-                                    <div key={`_embedded_comment_${idx}`} className='flex w-full gap-x-1'>
-                                        <div className='flex justify-center'>
-                                            <Image
-                                                src={_comment.user.pfp_src}
-                                                width={50}
-                                                height={50}
-                                                alt="Wave profile picture"
-                                                className="w-3/4 h-fit aspect-square! rounded-full"
-                                            />
-                                        </div>
-                                        <div className="flex flex-col w-full gap-y-1">
-                                            <div className="flex w-full flex-col">
-                                                <div className="flex w-full gap-x-1 items-center">
-                                                    <h2 className="cursor-not-allowed text-blood-orange text-sm">{_comment.user.name}</h2>
-                                                    <h2 className="text-sm ml-1 font-light">@{_comment.user.name}</h2>
-                                                    <p className='font-light'>•</p>
-                                                    <p className='text-sm font-light'>{_comment.timestamp}</p>
+                                    ) : comments.length ? (
+                                        <>
+                                            {comments.map((_comment, _commentIdx) => (
+                                                <div key={`_comment_${_commentIdx}`} className='flex w-full gap-x-1'>
+                                                    <div className='flex justify-center'>
+                                                        <Image
+                                                            src="/images/avatar_mosaic.png"
+                                                            width={50}
+                                                            height={50}
+                                                            alt="Wave profile picture"
+                                                            className="w-3/4 h-fit rounded-full"
+                                                        />
+                                                    </div>
+                                                    <div className="flex flex-col w-full gap-y-1">
+                                                        <div className="flex w-full flex-col">
+                                                            <div className="flex w-full gap-x-1 items-center">
+                                                                <h2 className="cursor-not-allowed text-blood-orange text-sm">FogMessier63</h2>
+                                                                <h2 className="text-sm ml-1 font-light">@FogMessier63</h2>
+                                                                <p className='font-light'>•</p>
+                                                                <p className='text-sm font-light'>Now</p>
+                                                            </div>
+                                                        </div>
+                                                        <p className='font-normal text-md'>{_comment}</p>
+                                                        <div className='w-full flex justify-between items-center'>
+                                                            <div className="flex items-center justify-center gap-x-8 py-2">
+                                                                <div className="cursor-not-allowed text-sm flex items-center justify-center gap-x-1">
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
+                                                                    0
+                                                                </div>
+                                                                <div className={`cursor-not-allowed text-sm flex items-center justify-center gap-x-1`}>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width={18} className='rotate-180 fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
+                                                                    0
+                                                                </div>
+                                                                <div className={`cursor-not-allowed text-sm flex items-center justify-center gap-x-1`}>
+                                                                    <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M576 304C576 436.5 461.4 544 320 544C282.9 544 247.7 536.6 215.9 523.3L97.5 574.1C88.1 578.1 77.3 575.8 70.4 568.3C63.5 560.8 62 549.8 66.8 540.8L115.6 448.6C83.2 408.3 64 358.3 64 304C64 171.5 178.6 64 320 64C461.4 64 576 171.5 576 304z" /></svg>
+                                                                    0
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </>
+                                    ) : null }
+                                    {
+                                        post.comments&&!isDisagreePost&&post.comments.map((_comment, idx) => (
+                                            <div key={`_embedded_comment_${idx}`} className='flex w-full gap-x-1'>
+                                                <div className='flex justify-center'>
+                                                    <Image
+                                                        src={_comment.user.pfp_src}
+                                                        width={50}
+                                                        height={50}
+                                                        alt="Wave profile picture"
+                                                        className="w-3/4 h-fit aspect-square! rounded-full"
+                                                    />
+                                                </div>
+                                                <div className="flex flex-col w-full gap-y-1">
+                                                    <div className="flex w-full flex-col">
+                                                        <div className="flex w-full gap-x-1 items-center">
+                                                            <h2 className="cursor-not-allowed text-blood-orange text-sm">{_comment.user.name}</h2>
+                                                            <h2 className="text-sm ml-1 font-light">@{_comment.user.name}</h2>
+                                                            <p className='font-light'>•</p>
+                                                            <p className='text-sm font-light'>{_comment.timestamp}</p>
+                                                        </div>
+                                                    </div>
+                                                    <p className='font-normal text-md'>{_comment.content}</p>
+                                                    <div className='w-full flex justify-between items-center'>
+                                                        <div className="flex items-center justify-center gap-x-8 py-2">
+                                                            <div className="cursor-not-allowed text-sm flex items-center justify-center gap-x-1">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
+                                                                {6 + postIdx*2 - idx}
+                                                            </div>
+                                                            <div className={`cursor-not-allowed text-sm flex items-center justify-center gap-x-1`}>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width={18} className='rotate-180 fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
+                                                                {2 + postIdx + idx}
+                                                            </div>
+                                                            <div className={`cursor-not-allowed text-sm flex items-center justify-center gap-x-1`}>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M576 304C576 436.5 461.4 544 320 544C282.9 544 247.7 536.6 215.9 523.3L97.5 574.1C88.1 578.1 77.3 575.8 70.4 568.3C63.5 560.8 62 549.8 66.8 540.8L115.6 448.6C83.2 408.3 64 358.3 64 304C64 171.5 178.6 64 320 64C461.4 64 576 171.5 576 304z" /></svg>
+                                                                {2 + (postIdx%2 * -1) + idx}
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <p className='font-normal text-md'>{_comment.content}</p>
-                                            <div className='w-full flex justify-between items-center'>
-                                                <div className="flex items-center justify-center gap-x-8 py-2">
-                                                    <div className="cursor-not-allowed text-sm flex items-center justify-center gap-x-1">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
-                                                        {6 + postIdx*2 - idx}
-                                                    </div>
-                                                    <div className={`cursor-not-allowed text-sm flex items-center justify-center gap-x-1`}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width={18} className='rotate-180 fill-current' viewBox="0 0 640 640"><path d="M297.4 201.4C309.9 188.9 330.2 188.9 342.7 201.4L502.7 361.4C515.2 373.9 515.2 394.2 502.7 406.7C490.2 419.2 469.9 419.2 457.4 406.7L320 269.3L182.6 406.6C170.1 419.1 149.8 419.1 137.3 406.6C124.8 394.1 124.8 373.8 137.3 361.3L297.3 201.3z" /></svg>
-                                                        {2 + postIdx + idx}
-                                                    </div>
-                                                    <div className={`cursor-not-allowed text-sm flex items-center justify-center gap-x-1`}>
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width={18} className='fill-current' viewBox="0 0 640 640"><path d="M576 304C576 436.5 461.4 544 320 544C282.9 544 247.7 536.6 215.9 523.3L97.5 574.1C88.1 578.1 77.3 575.8 70.4 568.3C63.5 560.8 62 549.8 66.8 540.8L115.6 448.6C83.2 408.3 64 358.3 64 304C64 171.5 178.6 64 320 64C461.4 64 576 171.5 576 304z" /></svg>
-                                                        {2 + (postIdx%2 * -1) + idx}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))
-                            }
-                            {
-                                Array.from({length: commentVal-2}).map((_, i) => (
-                                    <SkeletonComment key={`skeleton_${i}`} />
-                                ))
-                            }
-                        </div>
-                    </div>
+                                        ))
+                                    }
+                                    {
+                                        Array.from({length: commentVal-2}).map((_, i) => (
+                                            <SkeletonComment key={`skeleton_${i}`} />
+                                        ))
+                                    }
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
 
                 <button onClick={copyToClipboard} className={`fixed bottom-4 bg-cream flex w-full gap-x-2 py-16 text-blood-orange border rounded-md justify-center items-center cursor-pointer transition-colors duration-200 ease-in-out font-semibold text-xl max-w-7xl ${!comment.length && 'hidden'}`} data-tooltip-id="codeCopy" data-tooltip-content={isCopied ? "Copied! You can now return to the survey" : "Click below to copy"} data-tooltip-place="top">
@@ -549,22 +553,9 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                     <svg xmlns="http://www.w3.org/2000/svg" width={24} className='fill-blood-orange' viewBox="0 0 640 640"><path d="M288 64C252.7 64 224 92.7 224 128L224 384C224 419.3 252.7 448 288 448L480 448C515.3 448 544 419.3 544 384L544 183.4C544 166 536.9 149.3 524.3 137.2L466.6 81.8C454.7 70.4 438.8 64 422.3 64L288 64zM160 192C124.7 192 96 220.7 96 256L96 512C96 547.3 124.7 576 160 576L352 576C387.3 576 416 547.3 416 512L416 496L352 496L352 512L160 512L160 256L176 256L176 192L160 192z" /></svg>
                 </button>
             </div>
-            {isModeration && (
-                <div className='w-1/2 shrink-0 h-screen flex flex-col border-l border-black'>
-                    <ChatInterface
-                        userPfp="/images/avatar_mosaic.png"
-                        initialSystemPrompt={prompt}
-                        post={post}
-                        initialReply={initialReply}
-                        handleFinishModeration={handleFinishModeration}
-                        userId={userId}
-                        savedMessages={savedMessages}
-                    />
-                </div>
-            )}
             {finishedModeration && savedMessages.length && (
-                <div className='max-w-[50%] h-screen overflow-y-scroll flex flex-col border-l border-black'>
-                    <div className='flex w-full px-4 justify-center items-center py-4 text-xl font-semibold border-b border-black'>Chat Log</div>
+                <div className='max-w-[50%] h-screen overflow-y-scroll flex flex-col'>
+                    <div className='flex w-full px-4 justify-center items-center py-4 text-xl font-semibold border-b border-gray-200'>Chat Log</div>
                     <ChatMessages 
                         userPfp="/images/avatar_mosaic.png"
                         savedMessages={savedMessages}
