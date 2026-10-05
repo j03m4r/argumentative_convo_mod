@@ -402,20 +402,20 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                         />
                     </div>
                     <div className="flex-1 flex justify-center items-center">
-                        <div className='flex flex-col h-full w-full items-center py-4 justify-start gap-y-4'>
+                        <div className='flex flex-col h-full w-full items-center py-4 px-4 justify-start gap-y-4'>
                             {isLoadingModeration ? (
                                 <div className='w-full h-full flex justify-center items-center'>
                                     <OrbitProgress color="#ff3f34" size="medium" text="" textColor="" />
                                 </div>
                             ) : comment.length&&isDisagreePost ? (
-                                <div className='flex w-full gap-x-1'>
-                                    <div className='flex justify-center'>
+                                <div className='flex w-full gap-x-3'>
+                                    <div className='flex justify-center shrink-0'>
                                         <Image
                                             src="/images/avatar_mosaic.png"
-                                            width={50}
-                                            height={50}
+                                            width={40}
+                                            height={40}
                                             alt="Wave profile picture"
-                                            className="w-3/4 h-fit rounded-full"
+                                            className="w-10 h-10 rounded-full"
                                         />
                                     </div>
                                     <div className="flex flex-col w-full gap-y-1">
@@ -449,14 +449,14 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                             ) : comments.length ? (
                                 <>
                                     {comments.map((_comment, _commentIdx) => (
-                                        <div key={`_comment_${_commentIdx}`} className='flex w-full gap-x-1'>
-                                            <div className='flex justify-center'>
+                                        <div key={`_comment_${_commentIdx}`} className='flex w-full gap-x-3'>
+                                            <div className='flex justify-center shrink-0'>
                                                 <Image
                                                     src="/images/avatar_mosaic.png"
                                                     width={50}
                                                     height={50}
                                                     alt="Wave profile picture"
-                                                    className="w-3/4 h-fit rounded-full"
+                                                    className="w-10 h-10 rounded-full"
                                                 />
                                             </div>
                                             <div className="flex flex-col w-full gap-y-1">
@@ -492,14 +492,14 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                             ) : null }
                             {
                                 post.comments&&!isDisagreePost&&post.comments.map((_comment, idx) => (
-                                    <div key={`_embedded_comment_${idx}`} className='flex w-full gap-x-1'>
-                                        <div className='flex justify-center'>
+                                    <div key={`_embedded_comment_${idx}`} className='flex w-full gap-x-3'>
+                                        <div className='flex justify-center shrink-0'>
                                             <Image
                                                 src={_comment.user.pfp_src}
                                                 width={50}
                                                 height={50}
                                                 alt="Wave profile picture"
-                                                className="w-3/4 h-fit aspect-square! rounded-full"
+                                                className="w-10 h-10 aspect-square! rounded-full"
                                             />
                                         </div>
                                         <div className="flex flex-col w-full gap-y-1">
