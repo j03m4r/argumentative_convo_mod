@@ -116,6 +116,7 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
         comment: '',
         conversation: [],
         finishedModeration: false,
+        clickedEditInitialReply: false,
         hasUpvoted: null,
         msToPage2: 30000,
         createdAt: Timestamp.now(),
@@ -200,6 +201,15 @@ export async function updateFinishedModerationStatus(userId: string, finishedMod
 
     await updateDoc(docRef, {
         finishedModeration: finishedModeration,
+        updatedAt: Timestamp.now(),
+    });
+}
+
+export async function updateClickedEditInitialReply(userId: string, clicked: boolean) {
+    const docRef = doc(db, 'users', userId);
+
+    await updateDoc(docRef, {
+        clickedEditInitialReply: clicked,
         updatedAt: Timestamp.now(),
     });
 }
