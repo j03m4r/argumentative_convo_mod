@@ -563,7 +563,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                 </div>
             )}
             {finishedModeration && savedMessages.length && (
-                <div className='max-w-[50%] h-screen overflow-y-scroll flex flex-col border-l border-black'>
+                <div className='w-1/2 shrink-0 h-screen overflow-y-scroll flex flex-col border-l border-black'>
                     <div className='flex w-full px-4 justify-center items-center py-4 text-xl font-semibold border-b border-black'>Chat Log</div>
                     <ChatMessages 
                         userPfp="/images/avatar_mosaic.png"

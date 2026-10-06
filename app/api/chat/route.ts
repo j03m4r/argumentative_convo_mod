@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
         headers: {
             'x-api-key': process.env.ANTHROPIC_API_KEY!,
             'anthropic-version': '2023-06-01',
+            'anthropic-workspace-id': process.env.ANTHROPIC_WORKSPACE_ID!,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(body),
