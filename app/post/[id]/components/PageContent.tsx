@@ -212,6 +212,7 @@ const PageContent: FC<PageContentProps> = ({ post, postIdx, postType, upVoteVal,
                         setTimeout(function() {
                             setIsLoadingModeration(false);
                             setFinishedModeration(true);
+                            updateFinishedModerationStatus(userId, true);
                             setModalIsOpen(true);
                         }, 5000);
                     } else {

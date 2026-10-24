@@ -117,6 +117,9 @@ export async function submitInitialRatings(userId: string, ratings: number[]) {
         conversation: [],
         finishedModeration: false,
         clickedEditInitialReply: false,
+        editInitialReplyClickedAt: [],
+        finishedModerationAt: null,
+        commentSubmittedAt: null,
         hasUpvoted: null,
         msToPage2: 30000,
         createdAt: Timestamp.now(),
@@ -192,6 +195,7 @@ export async function updateComment(userId: string, comment: string) {
 
     await updateDoc(docRef, {
         comment: comment,
+        commentSubmittedAt: Timestamp.now(),
         updatedAt: Timestamp.now(),
     });
 }
@@ -201,6 +205,8 @@ export async function updateFinishedModerationStatus(userId: string, finishedMod
 
     await updateDoc(docRef, {
         finishedModeration: finishedModeration,
+        // Start of the window in which the participant can revise before posting
+        ...(finishedModeration && { finishedModerationAt: Timestamp.now() }),
         updatedAt: Timestamp.now(),
     });
 }
@@ -210,6 +216,8 @@ export async function updateClickedEditInitialReply(userId: string, clicked: boo
 
     await updateDoc(docRef, {
         clickedEditInitialReply: clicked,
+        // The button reappears if the revised reply is cleared, so log every press
+        editInitialReplyClickedAt: arrayUnion(Timestamp.now()),
         updatedAt: Timestamp.now(),
     });
 }
